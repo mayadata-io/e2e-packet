@@ -1,0 +1,94 @@
+stages:
+  - cluster-setup
+  - infra-setup
+  - stateful-apps-deploy
+  - Litmus-chaos-testing
+  - cleanup
+  - deploy
+packet-cluster:
+  image: chandankumar4/packet:v4
+  stage: cluster-setup
+  script: 
+    - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+    - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
+    - chmod 755 ./script/packet
+    - ./script/packet
+
+  artifacts:
+    paths:
+      - packet/
+
+openebs-deploy:
+  image: atulabhi/kops:v8
+  stage: infra-setup
+  dependencies:
+    - packet-cluster
+  script: 
+   - echo "deploying OpenEBS on Packet"
+   - ls packet
+   - chmod 775 ./script/infra-setup
+   - ./script/infra-setup  
+  artifacts:
+    paths:
+      - openebs-packet/
+
+percona-deploy:
+  image: atulabhi/kops:v8
+  stage: stateful-apps-deploy
+  dependencies:
+    - openebs-deploy
+  script: 
+   - echo "jobs-Packet-Started"
+   - chmod 775 ./script/stateful-app-deploy
+   - ./script/stateful-app-deploy
+
+  artifacts:
+    paths:
+      - packet-percona/
+
+apps-packet-deploy-cstor:
+  image: atulabhi/kops:v8
+  stage: stateful-apps-deploy
+  dependencies:
+    - openebs-deploy
+  script: 
+   - echo "jobs-packet-Started"
+   - chmod 775 ./script/stateful-app-deploy-cstor
+   - ./script/stateful-app-deploy-cstor
+  artifacts:
+    paths:
+      - packet-cstor/
+
+Litmus-Chaos:
+  image: atulabhi/kops:v8
+  dependencies:
+    - openebs-deploy
+  stage: Litmus-chaos-testing
+  script:
+   - echo "Introducing-Chaos"
+   - mkdir ~/.kube && cp -r openebs-packet/.kube/. ~/.kube/ 
+   - kubectl create -f https://raw.githubusercontent.com/atulabhi/litmus/v0.7-RC1/apps/percona/chaos/openebs_volume_replica_failure/run_litmus_test.yaml
+   - chmod 755 ./script/chaos
+   - ./script/chaos
+
+Litmus-Chaos-cstor:
+  image: atulabhi/kops:v8
+  dependencies:
+    - openebs-deploy
+  stage: Litmus-chaos-testing
+  script:
+   - echo "Introducing-Chaos"
+   - mkdir ~/.kube && cp -r openebs-packet/.kube/. ~/.kube/ 
+   - kubectl create -f https://raw.githubusercontent.com/atulabhi/litmus/cstor-v0.7-RC1/apps/percona/chaos/openebs_cstor_target_failure/run_litmus_test.yaml
+   - chmod +x ./script/chaoscstor
+   - ./script/chaoscstor
+
+cleanup-packet:
+  when: always
+  image: chandankumar4/packet:v4
+  dependencies:
+    - packet-cluster
+  stage: cleanup
+  script: 
+    - chmod 755 ./script/packet-cleanup
+    - ./script/packet-cleanup

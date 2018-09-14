@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+echo "Packet-Cleanup"
+mkdir ~/.kube ~/.ssh /tmp/packet
+cp -r packet/.kube/. ~/.kube/
+cp -r packet/cluster/ssh/. ~/.ssh/ && eval `ssh-agent -s` && ssh-add
+cp packet/cluster/device_id /tmp/packet/
+export PACKET_API_TOKEN=$packet_api_token
+mkdir cluster && cd cluster
+git clone https://github.com/chandankumar4/litmus.git
+cd litmus/k8s/packet/k8s-installer && git checkout packet
+echo "--------------- deleting packet cluster --------------------"
+ansible-playbook delete_packet_cluster.yml -vvv

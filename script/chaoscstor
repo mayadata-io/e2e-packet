@@ -1,0 +1,24 @@
+#!/bin/bash
+set -ex
+
+sleep 120
+ 
+litmus_pod=$(kubectl get pod -a -n litmus --no-headers -o custom-columns=:metadata.name | grep openebs-cstor-target-failure)
+status_cmd='kubectl logs $litmus_pod -n litmus -c ansibletest'
+while [[ $(kubectl get pod $litmus_pod --no-headers -n litmus -o custom-columns=:status.phase) =~ 'Running' ]]
+do
+   echo "Still Running sir..."
+   sleep 1
+done
+if [[ ! $(eval $status_cmd) =~ 'FAILED!' ]]; then
+   TestStatus='Pass'
+else
+  TestStatus='Fail'
+fi
+echo $TestStatus
+
+echo "========================================================================="
+
+eval $status_cmd
+
+# kubectl describe lr

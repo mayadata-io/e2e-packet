@@ -1,0 +1,51 @@
+#!/bin/bash
+set -ex
+
+echo "Deploying statefulapps"
+
+
+mkdir ~/.kube
+cp -r  openebs-packet/.kube/. ~/.kube/
+
+echo "Deploying Percon with Cstor"
+git clone https://github.com/atulabhi/litmus.git
+
+cd litmus
+
+git checkout cstor-v0.7-RC1
+
+echo "Deploying storage-class"
+
+#kubectl apply -f  providers/openebs/installers/storageclass/0.7/litmusbook/storageclass_setup.yaml
+
+kubectl get sc
+
+echo "deploying percona app"
+kubectl apply -f apps/percona/deployers/deploy_percona_litmus.yaml
+
+kubectl get pods -n percona
+
+litmus_pod_cstor=$(kubectl get pod -a -n litmus --no-headers -o custom-columns=:metadata.name | grep litmus-percona-cstor)
+status_cmd='kubectl logs $litmus_pod_cstor -n litmus -c ansibletest'
+
+sleep 120
+while [[ $(kubectl get pod $litmus_pod_cstor --no-headers -n litmus -o custom-columns=:status.phase) =~ 'Running' ]]
+do
+   echo "Still Running sir..."
+   sleep 1
+done
+if [[ ! $(eval $status_cmd) =~ 'FAILED!' ]]; then
+   TestStatus='Pass'
+else
+  TestStatus='Fail'
+fi
+echo $TestStatus
+
+echo "========================================================================="
+
+eval $status_cmd
+
+kubectl get po -n litmus
+
+kubectl get sc
+
