@@ -4,9 +4,9 @@ set -e
 
 echo "Packet-Cleanup"
 mkdir ~/.kube ~/.ssh /tmp/packet
-cp -r packet/.kube/. ~/.kube/
-cp -r packet/cluster/ssh/. ~/.ssh/ && eval `ssh-agent -s` && ssh-add
-cp packet/cluster/device_id /tmp/packet/
+cp -r e2e-packet/.kube/. ~/.kube/
+cp -r e2e-packet/cluster/ssh/. ~/.ssh/ && eval `ssh-agent -s` && ssh-add
+cp e2e-packet/cluster/device_id /tmp/packet/
 export PACKET_API_TOKEN=$packet_api_token
 mkdir cluster && cd cluster
 git clone https://github.com/chandankumar4/litmus.git

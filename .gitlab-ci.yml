@@ -16,7 +16,7 @@ packet-cluster:
 
   artifacts:
     paths:
-      - packet/
+      - e2e-packet/
 
 openebs-deploy:
   image: atulabhi/kops:v8
