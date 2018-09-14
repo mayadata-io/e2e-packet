@@ -25,7 +25,6 @@ openebs-deploy:
     - packet-cluster
   script: 
    - echo "deploying OpenEBS on Packet"
-   - ls packet
    - chmod 775 ./script/infra-setup
    - ./script/infra-setup  
   artifacts:
