@@ -2,7 +2,7 @@
 set -e
 
 echo "creating packet-cluster"
-mkdir ~/.kube   e2e-packet/cluster e2e-packet/cluster/ssh e2e-packet/.kube cluster && cd cluster
+mkdir ~/.kube   /openebs/e2e-packet/cluster /openebs/e2e-packet/cluster/ssh /openebs/e2e-packet/.kube cluster && cd cluster
 export PACKET_API_TOKEN=$packet_api_token
 #echo $PACKET_API_TOKEN
 git clone https://github.com/chandankumar4/litmus.git
