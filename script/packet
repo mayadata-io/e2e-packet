@@ -8,14 +8,14 @@ export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/chandankumar4/litmus.git
 cd litmus/k8s/packet/k8s-installer && git checkout packet
 echo "--------------- creating packet cluster --------------------"
-ansible-playbook create_packet_cluster.yml -vvv
+ansible-playbook create_packet_cluster.yml -v
 kubectl get nodes
 kubectl get pods --all-namespaces
 kubectl apply -f https://raw.githubusercontent.com/openebs/litmus/master/hack/rbac.yaml
 cp -r /tmp/packet/. /openebs/e2e-packet/cluster/
-cat ~/.kube/config > /openebs/e2e-packet/.kube/admin.conf
+cat ~/.kube/config > /openebs/e2e-packet/cluster/.kube/admin.conf
 cp -r ~/.kube/. /openebs/e2e-packet/cluster/.kube/
 cp -r ~/.ssh/. /openebs/e2e-packet/cluster/ssh
-kubectl create configmap kubeconfig --from-file=/openebs/e2e-packet/.kube/admin.conf -n litmus
+kubectl create configmap kubeconfig --from-file=/openebs/e2e-packet/cluster/.kube/admin.conf -n litmus
 kubectl get pods --all-namespaces
 kubectl get nodes
