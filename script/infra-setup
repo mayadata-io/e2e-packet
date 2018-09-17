@@ -5,8 +5,8 @@ set -e
 
 echo "set-up EYE on client"
 mkdir ~/.kube openebs-packet openebs-packet/.kube 
-cp -r e2e-packet/.kube/. ~/.kube/
-cp -r e2e-packet/.kube/. openebs-packet/.kube/
+cp -r .kube/. ~/.kube/
+cp -r .kube/. openebs-packet/.kube/
 echo " deploying Aggrigrator and Forwarder on client"
 wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/production/efk-client/playbook/efk-vars.yml
 wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/production/efk-client/playbook/efk.yml

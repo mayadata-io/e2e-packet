@@ -4,8 +4,8 @@ set -e
 
 echo "Packet-Cleanup"
 mkdir ~/.kube ~/.ssh /tmp/packet
-cp -r e2e-packet/.kube/. ~/.kube/
-cp -r e2e-packet/cluster/ssh/. ~/.ssh/ && eval `ssh-agent -s` && ssh-add
+cp -r .kube/. ~/.kube/
+cp -r cluster/ssh/. ~/.ssh/ && eval `ssh-agent -s` && ssh-add
 cp e2e-packet/cluster/device_id /tmp/packet/
 export PACKET_API_TOKEN=$packet_api_token
 mkdir cluster && cd cluster
