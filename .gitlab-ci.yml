@@ -70,18 +70,6 @@ Litmus-Chaos:
    - chmod 755 ./script/chaos
    - ./script/chaos
 
-Litmus-Chaos-cstor:
-  image: atulabhi/kops:v8
-  dependencies:
-    - openebs-deploy
-  stage: Litmus-chaos-testing
-  script:
-   - echo "Introducing-Chaos"
-   - mkdir ~/.kube && cp -r openebs-packet/.kube/. ~/.kube/ 
-   - kubectl create -f https://raw.githubusercontent.com/atulabhi/litmus/cstor-v0.7-RC1/apps/percona/chaos/openebs_cstor_target_failure/run_litmus_test.yaml
-   - chmod +x ./script/chaoscstor
-   - ./script/chaoscstor
-
 cleanup-packet:
   when: always
   image: chandankumar4/packet:v4
