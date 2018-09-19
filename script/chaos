@@ -19,6 +19,6 @@ echo "========================================================================="
 
 eval $status_cmd
 
-kubectl describe lr
+#kubectl describe lr
  
 
