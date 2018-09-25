@@ -8,8 +8,7 @@ cp -r cluster/.kube/. ~/.kube/
 cp -r cluster/ssh/. ~/.ssh/ && eval `ssh-agent -s` && ssh-add
 cp cluster/device_id /tmp/packet/
 export PACKET_API_TOKEN=$packet_api_token
-mkdir cluster && cd cluster
-git clone https://github.com/chandankumar4/litmus.git
-cd litmus/k8s/packet/k8s-installer && git checkout packet
+git clone https://github.com/openebs/litmus.git
+cd litmus/k8s/packet/k8s-installer
 echo "--------------- deleting packet cluster --------------------"
-ansible-playbook delete_packet_cluster.yml -vvv
+ansible-playbook delete_packet_cluster.yml -vv
