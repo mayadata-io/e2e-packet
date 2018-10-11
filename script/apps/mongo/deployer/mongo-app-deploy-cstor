@@ -1,0 +1,156 @@
+#!/bin/bash
+set -x
+
+#################
+## ENVIRONMENT ##
+#################
+
+## TODO: Ideally, run_metadata should be passed as gitlab runner (CI runtime) ENV
+run_metadata="cstor"
+
+## https://github.com/openebs/litmus/blob/master/apps/percona/deployers/test_vars.yml
+test_name="mongodb-deployment" 
+
+if [[ -n "$run_metadata" ]]; then
+  test_name="$test_name-$run_metadata"
+fi 
+      
+################
+## FUNCTIONS  ##
+################
+
+error_handler()
+{
+rc=$1; message=$(echo $2 | cut -d "=" -f 2); act=$(echo $3 | cut -d "=" -f 2)
+if [ $rc -ne 0 ]; then
+  echo "$message"
+  if [ "$act" == "exit" ]; then
+    exit 1 
+  fi
+fi
+}
+
+task_delimiter()
+{
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' "%"
+}
+
+###################
+## DEPENDENCIES  ##
+###################
+
+## Derive the kubeconfig of the Packet cluster into the gitlab job runner pod
+## "openebs-packet" is a shared path for the gitlab runner passed as artifact by gitlab 
+
+echo "Setting up test dependencies.."
+ 
+mkdir ~/.kube
+cp -r openebs-packet/.kube/. ~/.kube/
+## Clone the litmus repo, checkout the e2e branch, navigate to litmus root 
+
+#git clone https://github.com/atulabhi/litmus.git
+#cd litmus; git checkout v0.7-RC1
+
+git clone https://github.com/openebs/litmus.git
+cd litmus
+
+task_delimiter;
+
+############################
+## LITMUS PRECONDITIONING ##
+############################
+
+## TODO: Better way/logic to replace job ENV (SC, PVC, LABEL, NS) based on run instance intent (CLI) 
+## TODO: Add logic to add ENV for run_instance_metadata/RunID
+
+: << EOF
+  ----------------------------------------------------------------------------------------
+ | specAttribute        | kind	   | jiva       		| cStor-sparse  	  |
+  ----------------------------------------------------------------------------------------
+ | litmusJobLabel       | jobSpec  | mongodb-deployment-litmus  | mongodb-deployment-cstor|     
+ | providerStorageClass | env 	   | openebs-mongodb     	| openebs-cstor-sparse    |
+ | appNamespace         | env	   | app-mongo-ns             	| mongocstor              |
+ | runID		| env(add) | 	-			| cstor                   |
+  ----------------------------------------------------------------------------------------
+EOF
+
+cp apps/mongodb/deployers/run_litmus_test.yml run_cstor_litmus_test.yml
+sed -i -e 's/app: mongodb-deployment-litmus/app: mongodb-deployment-cstor/g' \
+-e 's/value: openebs-mongodb/value: openebs-cstor-sparse/g' \
+-e 's/value: app-mongo-ns/value: mongocstor/g' run_cstor_litmus_test.yml
+
+sed -i '/command:/i \
+          - name: RUN_ID\
+            value: '"$run_metadata"'\
+' run_cstor_litmus_test.yml
+
+#################
+## RUNNER MAIN ##
+#################
+
+echo "Running the litmus test.."
+
+## Create the litmus job for percona app deploy with cstor storage class
+
+jobNameCmd="kubectl get jobs -n litmus --no-headers -o jsonpath='{.items[?(@.metadata.labels.app==\"mongodb-deployment-cstor\")].metadata.name}'"
+
+job_deploy_out=$(kubectl create -f run_cstor_litmus_test.yml) && \
+job_name=$(eval $jobNameCmd); retcode=$?
+error_handler $retcode msg="Unable to run litmusbook, exiting" action="exit"
+
+## Obtain the litmus pod name 
+
+litmusPodCmd="kubectl get pod --no-headers -n litmus -o jsonpath='{.items[?(@.metadata.labels.job-name==\"$job_name\")].metadata.name}'"
+litmus_pod=$(eval $litmusPodCmd); retcode=$?
+error_handler $retcode msg="Unable to find litmus test runner pod, exiting" action="exit"
+
+## Wait till the ansibletest container terminates && also confirm job completion status. This is done to ensure
+## that execution of auxiliary containers such as loggers is completed. Getting the ansibletest ccontainer to completed state 
+## satisfies the "necessary" condition for test job completion
+
+containerStateCmd="kubectl get pod ${litmus_pod} -n litmus -o jsonpath='{.status.containerStatuses[?(@.name==\"ansibletest\")].state}'"
+jobStateCmd="kubectl get pod ${litmus_pod} --no-headers -n litmus -o custom-columns=:status.phase"
+
+## TODO: Consider cases where litmus pod is evicted
+
+while [[ ! $(eval $containerStateCmd) =~ 'terminated' ]]; do
+  sleep 1 
+done 
+
+while [[ $(eval $jobStateCmd) =~ 'Running' ]]; do
+   sleep 1
+done
+
+echo "Litmus test run Job has completed"
+task_delimiter;
+
+## Printing the test logs & cluster state for debug purposes 
+
+echo "Dumping Litmus test pod logs for debug"; echo ""
+kubectl logs $litmus_pod -n litmus -c ansibletest 
+task_delimiter; 
+
+echo "Dumping state of cluster post job run"; echo ""
+kubectl get pods --all-namespaces
+kubectl get pvc --all-namespaces
+kubectl get sc
+
+task_delimiter; 
+
+## Check the test status & result from the litmus result custom resource
+
+testStatus=$(kubectl get lr $test_name --no-headers -o custom-columns=:spec.testStatus.phase) && \
+testResult=$(kubectl get lr $test_name --no-headers -o custom-columns=:spec.testStatus.result); retcode=$?
+error_handler $retcode msg="Unable to find litmus result custom resource, exiting" action="exit"
+
+if [[ $testStatus == "completed" ]]; then
+  if [[ $testResult == "Pass" ]]; then
+    echo "TEST: PASS"
+  else 
+    echo "TEST: FAILED"; exit 1 
+  fi
+else
+  echo "Test Execution was aborted"; exit 1 
+fi 
+
+
