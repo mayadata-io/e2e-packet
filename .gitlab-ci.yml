@@ -13,7 +13,7 @@ stages:
 ## Setup the kubernetes cluster
 
 packet-cluster:
-  image: atulabhi/kops:v8
+  image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
@@ -201,7 +201,7 @@ tgt-disconnect-{mongo-cstor}:
 
 cleanup-packet:
   when: always
-  image: atulabhi/kops:v8
+  image: chandankumar4/packet:v4
   dependencies:
     - packet-cluster
   stage: CLUSTER-CLEANUP
