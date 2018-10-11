@@ -140,8 +140,8 @@ task_delimiter;
 
 ## Check the test status & result from the litmus result custom resource
 
-testStatus=$(kubectl get lr $test_name --no-headers -o custom-columns=:spec.testStatus.phase) && \
-testResult=$(kubectl get lr $test_name --no-headers -o custom-columns=:spec.testStatus.result); retcode=$?
+testStatus=$(kubectl get litmusresult $test_name --no-headers -o custom-columns=:spec.testStatus.phase) && \
+testResult=$(kubectl get litmusresult $test_name --no-headers -o custom-columns=:spec.testStatus.result); retcode=$?
 error_handler $retcode msg="Unable to find litmus result custom resource, exiting" action="exit"
 
 if [[ $testStatus == "completed" ]]; then
