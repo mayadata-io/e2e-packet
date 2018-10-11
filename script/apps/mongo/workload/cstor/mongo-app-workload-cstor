@@ -46,6 +46,7 @@ echo "Setting up test dependencies.."
  
 mkdir ~/.kube
 cp -r openebs-packet/.kube/. ~/.kube/
+
 ## Clone the litmus repo, checkout the e2e branch, navigate to litmus root 
 
 #git clone https://github.com/atulabhi/litmus.git
@@ -69,7 +70,7 @@ task_delimiter;
  | specAttribute        | kind     | jiva               | cStor-sparse                 |
   ------------------------------------------------------------------------------------
  | litmusJobLabel       | jobSpec  | mongodb-loadjob    | mongodb-loadjob-cstor        |
- | appNamespace         | env      | app-mongo-ns       | mongodb-cstor                |
+ | appNamespace         | env      | app-mongo-ns       | mongocstor                |
  | runID                | env(add) |    -               | cstor 
   ------------------------------------------------------------------------------------
 EOF
@@ -77,7 +78,7 @@ EOF
 cp apps/mongodb/workload/run_litmus_test.yml run_cstor_litmus_test.yml
 
 sed -i -e 's/loadgen: mongodb-loadjob/loadgen: mongodb-loadjob-cstor/g' \
--e 's/value: app-mongo-ns/value: mongodb-cstor/g' run_cstor_litmus_test.yml
+-e 's/value: app-mongo-ns/value: mongocstor/g' run_cstor_litmus_test.yml
 
 sed -i '/command:/i \
           - name: RUN_ID\

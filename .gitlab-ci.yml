@@ -10,7 +10,7 @@ stages:
   - APP-CHAOS-TEST
   - CLUSTER-CLEANUP
 
-## Setup the kubernetes cluster
+# Setup the kubernetes cluster
 
 packet-cluster:
   image: chandankumar4/packet:v4

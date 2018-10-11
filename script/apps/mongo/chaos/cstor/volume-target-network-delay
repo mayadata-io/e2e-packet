@@ -46,6 +46,7 @@ echo "Setting up test dependencies.."
  
 mkdir ~/.kube
 cp -r openebs-packet/.kube/. ~/.kube/
+
 ## Clone the litmus repo, checkout the e2e branch, navigate to litmus root 
 
 #git clone https://github.com/atulabhi/litmus.git
@@ -78,7 +79,7 @@ EOF
 cp apps/percona/chaos/openebs_target_network_delay/run_litmus_test.yml run_mongo_cstor_ctrl_network_delay.yml
 
 sed -i -e 's/name: openebs-target-network-delay/name: openebs-target-network-delay-cstor/g' \
--e 's/value: app-mongo-ns/value: mongocstor/g' \
+-e 's/value: app-percona-ns/value: mongocstor/g' \
 -e 's/value: percona-mysql-claim/value: openebs-mongo-mongo-0/g' \
 -e 's/''name=percona''/''app=mongo''/g' run_mongo_cstor_ctrl_network_delay.yml
 

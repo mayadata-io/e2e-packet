@@ -40,6 +40,7 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' "%"
 ## DEPENDENCIES  ##
 ###################
 
+
 ## Derive the kubeconfig of the Packet cluster into the gitlab job runner pod
 ## "openebs-packet" is a shared path for the gitlab runner passed as artifact by gitlab 
 
