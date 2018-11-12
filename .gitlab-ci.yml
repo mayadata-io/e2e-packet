@@ -10,6 +10,9 @@ stages:
   - APP-CHAOS-TEST
   - CLUSTER-CLEANUP
 
+variables: 
+  utils_path: "/openebs/e2e-packet/script/utils"
+
 # Setup the kubernetes cluster
 
 packet-cluster:
