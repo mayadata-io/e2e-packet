@@ -7,6 +7,20 @@ set -ex
 
 ## TODO: Ideally, run_metadata should be passed as gitlab runner (CI runtime) ENV
 run_metadata=""
+present_dir=$(pwd)
+#clone e2e-infrastructre to get the latest commits and run env-exporter script from env
+git clone https://github.com/openebs/e2e-infrastructure.git
+cd e2e-infrastructure/env
+##exporting jiva-controller-image as env##
+export OPENEBS_IO_JIVA_CONTROLLER_IMAGE=$(eval python env_exporter.py -o jcontroller -fp ../baseline/baseline)
+##exporting jiva-replica-image as env##
+export OPENEBS_IO_JIVA_REPLICA_IMAGE=$(eval python env_exporter.py -o jreplica -fp ../baseline/baseline)
+##exporting m-apiserver as env##
+export MAYA_APISERVER_IMAGE=$(eval python env_exporter.py -o mapi -fp ../baseline/baseline)
+##exporting maya-volume-exporter as env##
+export OPENEBS_IO_VOLUME_MONITOR_IMAGE=$(eval python env_exporter.py -o iovolume -fp ../baseline/baseline)
+cd $present_dir
+
 
 ## https://github.com/openebs/litmus/blob/master/apps/percona/deployers/test_vars.yml
 test_name="openebsinstaller"
@@ -51,6 +65,7 @@ echo "Setting up test dependencies.."
 mkdir ~/.kube openebs-packet openebs-packet/.kube 
 cp -r cluster/.kube/. ~/.kube/
 cp -r cluster/.kube/. openebs-packet/.kube/
+sudo -H pip install pyyaml --upgrade
 
 for i in efk-vars.yml efk.yml get_url.yml; do
   wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/production/efk-client/playbook/$i
@@ -75,6 +90,15 @@ task_delimiter;
 
 ## TODO: Add logic to replace job ENV based on run instance intent 
 ## TODO: Add logic to add ENV for run_instance_metadata/RunID
+
+#update openebs litmus job
+wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/env-update/env.py # script to update openebs_setup.yaml
+python3 env.py -f providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
+
+echo "updated yaml"
+cat providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
+
+
 
 #################
 ## RUNNER MAIN ##
