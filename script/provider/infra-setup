@@ -6,51 +6,34 @@ set -ex
 ######################
 
 ## TODO: Ideally, run_metadata should be passed as gitlab runner (CI runtime) ENV
-run_metadata=""
+present_dir=$(pwd)
+#clone e2e-infrastructre to get the latest commits and run env-exporter script from env
+git clone https://github.com/openebs/e2e-infrastructure.git
+cd e2e-infrastructure/env
+##exporting jiva-controller-image as env##
+export OPENEBS_IO_JIVA_CONTROLLER_IMAGE=$(eval python env_exporter.py -o jcontroller -fp ../baseline/baseline)
+##exporting jiva-replica-image as env##
+export OPENEBS_IO_JIVA_REPLICA_IMAGE=$(eval python env_exporter.py -o jreplica -fp ../baseline/baseline)
+##exporting m-apiserver as env##
+export MAYA_APISERVER_IMAGE=$(eval python env_exporter.py -o mapi -fp ../baseline/baseline)
+##exporting maya-volume-exporter as env##
+export OPENEBS_IO_VOLUME_MONITOR_IMAGE=$(eval python env_exporter.py -o iovolume -fp ../baseline/baseline)
+cd $present_dir
 
-## https://github.com/openebs/litmus/blob/master/apps/percona/deployers/test_vars.yml
-test_name="openebsinstaller"
+test_name=$(${utils_path}/generate_test_name testcase=openebsinstaller metadata="")
 
-if [[ -n "$run_metadata" ]]; then
-  test_name="$test_name-$run_metadata"
-fi
 
 ## Display pipeline info
 echo $CI_PIPELINE_ID; echo $CI_PIPELINE_IID; echo $CI_COMMIT_SHA
 
-################
-## FUNCTIONS  ##
-################
-error_handler()
-{
-rc=$1; message=$(echo $2 | cut -d "=" -f 2); act=$(echo $3 | cut -d "=" -f 2)
-if [ $rc -ne 0 ]; then
-  echo "$message"
-  if [ "$act" == "exit" ]; then
-    exit 1
-  fi
-fi
-}
-task_delimiter()
-{
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' "%"
-}
+${utils_path}/task_delimiter;
 
 ###################
 ## DEPENDENCIES  ##
 ###################
 
-
-## Derive the kubeconfig of the Packet cluster into the gitlab job runner pod
-## "openebs-packet" is a shared path for the gitlab runner passed as artifact by gitlab 
-
 echo "Setting up test dependencies.."
-
-# TODO - Investigate need another folder called openebs-packet
-
-mkdir ~/.kube openebs-packet openebs-packet/.kube 
-cp -r cluster/.kube/. ~/.kube/
-cp -r cluster/.kube/. openebs-packet/.kube/
+${utils_path}/setup_dependencies infra-setup 
 
 for i in efk-vars.yml efk.yml get_url.yml; do
   wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/production/efk-client/playbook/$i
@@ -59,89 +42,42 @@ done
 echo "EFK: Deploying Aggregrator and Forwarder on client"
 ansible-playbook efk.yml --extra-vars "commit_id=$CI_COMMIT_SHA pipeline_id=$CI_PIPELINE_ID" 
 
-## Clone the litmus repo, checkout the e2e branch, navigate to litmus root 
-
-#git clone https://github.com/atulabhi/litmus.git
-#cd litmus; git checkout v0.7-RC1
+## Clone the litmus repo, navigate to litmus root 
 
 git clone https://github.com/openebs/litmus.git
 cd litmus
 
-task_delimiter;
+${utils_path}/task_delimiter;
 
 ############################
 ## LITMUS PRECONDITIONING ##
 ############################
 
-## TODO: Add logic to replace job ENV based on run instance intent 
-## TODO: Add logic to add ENV for run_instance_metadata/RunID
+
+#update openebs litmus job
+wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/env-update/env.py # script to update openebs_setup.yaml
+python3 env.py -f providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
+
+echo "updated yaml"
+cat providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
+cp providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml run_test.yml
 
 #################
 ## RUNNER MAIN ##
 #################
 
 echo "Running litmus test for openebs deploy.."
-
-jobNameCmd="kubectl get jobs -n litmus --no-headers -o jsonpath='{.items[?(@.metadata.labels.provider==\"openebs-setup\")].metadata.name}'"
-
-job_deploy_out=$(kubectl create -f providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml) && \
-job_name=$(eval $jobNameCmd); retcode=$?
-error_handler $retcode msg="Unable to run litmusbook, exiting" action="exit"
-
-## Obtain the litmus pod name 
-
-litmusPodCmd="kubectl get pod --no-headers -n litmus -o jsonpath='{.items[?(@.metadata.labels.job-name==\"$job_name\")].metadata.name}'"
-litmus_pod=$(eval $litmusPodCmd); retcode=$?
-error_handler $retcode msg="Unable to find litmus test runner pod, exiting" action="exit"
-
-## Wait till the ansibletest container terminates && also confirm job completion status. This is done to ensure
-## that execution of auxiliary containers such as loggers is completed. Getting the ansibletest ccontainer to completed state 
-## satisfies the "necessary" condition for test job completion
-
-containerStateCmd="kubectl get pod ${litmus_pod} -n litmus -o jsonpath='{.status.containerStatuses[?(@.name==\"ansibletest\")].state}'"
-jobStateCmd="kubectl get pod ${litmus_pod} --no-headers -n litmus -o custom-columns=:status.phase"
-
-## TODO: Consider cases where litmus pod is evicted
-
-while [[ ! $(eval $containerStateCmd) =~ 'terminated' ]]; do
-  sleep 1
-done
-
-while [[ $(eval $jobStateCmd) =~ 'Running' ]]; do
-   sleep 1
-done
-
-echo "Litmus test run Job has completed"
-task_delimiter;
-
-## Printing the test logs & cluster state for debug purposes 
-
-echo "Dumping Litmus test pod logs for debug"; echo ""
-kubectl logs $litmus_pod -n litmus -c ansibletest
-task_delimiter;
+${utils_path}/litmus_job_runner label='provider:openebs-setup' job=run_test.yml
+${utils_path}/task_delimiter;
 
 echo "Dumping state of cluster post job run"; echo ""
-kubectl get pods --all-namespaces
-kubectl get pvc --all-namespaces
-kubectl get sc 
+${utils_path}/dump_cluster_state;
+${utils_path}/task_delimiter;
 
-task_delimiter;
-
+#################
+## GET RESULT  ##
+#################
 
 ## Check the test status & result from the litmus result custom resource
-
-testStatus=$(kubectl get litmusresult $test_name --no-headers -o custom-columns=:spec.testStatus.phase) && \
-testResult=$(kubectl get litmusresult $test_name --no-headers -o custom-columns=:spec.testStatus.result); retcode=$?
-error_handler $retcode msg="Unable to find litmus result custom resource, exiting" action="exit"
-
-if [[ $testStatus == "completed" ]]; then
-  if [[ $testResult == "Pass" ]]; then
-    echo "TEST: PASS"
-  else
-    echo "TEST: FAILED"; exit 1
-  fi
-else
-  echo "Test Execution was aborted"; exit 1
-fi
-
+${utils_path}/get_litmus_result ${test_name}
 
