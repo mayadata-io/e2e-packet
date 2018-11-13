@@ -5,7 +5,6 @@ set -ex
 ##   ENVIRONMENT    ##
 ######################
 
-## TODO: Ideally, run_metadata should be passed as gitlab runner (CI runtime) ENV
 present_dir=$(pwd)
 #clone e2e-infrastructre to get the latest commits and run env-exporter script from env
 git clone https://github.com/openebs/e2e-infrastructure.git
@@ -52,8 +51,6 @@ ${utils_path}/task_delimiter;
 ############################
 ## LITMUS PRECONDITIONING ##
 ############################
-
-
 #update openebs litmus job
 wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/env-update/env.py # script to update openebs_setup.yaml
 python3 env.py -f providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
@@ -61,6 +58,13 @@ python3 env.py -f providers/openebs/installers/operator/master/litmusbook/openeb
 echo "updated yaml"
 cat providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
 cp providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml run_test.yml
+
+#update openebs litmus job
+wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/env-update/env.py # script to update openebs_setup.yaml
+python3 env.py -f providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
+
+echo "updated yaml"
+cat providers/openebs/installers/operator/master/litmusbook/openebs_setup.yaml
 
 #################
 ## RUNNER MAIN ##
