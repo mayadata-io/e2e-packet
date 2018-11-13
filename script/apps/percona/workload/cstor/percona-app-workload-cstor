@@ -6,7 +6,7 @@ set -x
 #################
 
 ## https://github.com/openebs/litmus/blob/master/apps/percona/workload/test_vars.yml
-test_name=$(${utils_path}/generate_test_name testcase=percona-loadgen metadata=cstor)
+run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=percona-loadgen metadata=${run_id})
 
 ###################
 ## DEPENDENCIES  ##
@@ -40,7 +40,7 @@ sed -i -e 's/loadgen: percona-loadjob/loadgen: percona-loadjob-cstor/g' \
 
 sed -i '/command:/i \
           - name: RUN_ID\
-            value: '"$run_metadata"'\
+            value: '"$run_id"'\
 ' run_test.yml
 
 

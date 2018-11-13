@@ -25,7 +25,7 @@ cd litmus
 ## LITMUS PRECONDITIONING ##
 ############################
 
-cp apps/memleak/tests/run_litmus_test.yml run_test.yml
+cp apps/custom/tests/memcheck/run_litmus_test.yml run_test.yml
 
 #################
 ## RUNNER MAIN ##

@@ -6,7 +6,7 @@ set -x
 #################
 
 ## https://github.com/openebs/litmus/blob/master/apps/mongodb/deployers/test_vars.yml
-test_name=$(${utils_path}/generate_test_name testcase=mongodb-deployment metadata=cstor)
+run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=mongodb-deployment metadata=${run_id})
 
 ###################
 ## DEPENDENCIES  ##
@@ -44,7 +44,7 @@ sed -i -e 's/app: mongodb-deployment-litmus/app: mongodb-deployment-cstor/g' \
 
 sed -i '/command:/i \
           - name: RUN_ID\
-            value: '"$run_metadata"'\
+            value: '"$run_id"'\
 ' run_test.yml
 
 #################

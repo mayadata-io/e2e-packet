@@ -5,19 +5,19 @@ set -x
 ## ENVIRONMENT ##
 #################
 
-## https://github.com/openebs/litmus/blob/master/apps/percona/workload/test_vars.yml
-run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=mongodb-loadgen metadata=${run_id})
+## https://github.com/openebs/litmus/blob/master/apps/cassandra/workload/test_vars.yml
+run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=cassandra-loadgen metadata=${run_id})
+
 
 ###################
 ## DEPENDENCIES  ##
 ###################
-
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
 
 git clone https://github.com/openebs/litmus.git
-cd litmus
+cd litmus 
 
 ############################
 ## LITMUS PRECONDITIONING ##
@@ -27,28 +27,29 @@ cd litmus
   ------------------------------------------------------------------------------------
  | specAttribute        | kind     | jiva               | cStor-sparse                 |
   ------------------------------------------------------------------------------------
- | litmusJobLabel       | jobSpec  | mongodb-loadjob    | mongodb-loadjob-cstor        |
- | appNamespace         | env      | app-mongo-ns       | mongocstor                   |
- | runID                | env(add) |    -               | cstor                        |
+ | litmusJobLabel       | jobSpec  | cassandra-loadjob  | casandra-loadjob-cstor        |
+ | appNamespace         | env      | app-cass-ns        | cassandra-cstor                |
+ | runID                | env(add) |    -               | cstor 
   ------------------------------------------------------------------------------------
 EOF
 
-cp apps/mongodb/workload/run_litmus_test.yml run_test.yml
+cp apps/cassandra/workload/run_litmus_test.yml run_test.yml
 
-sed -i -e 's/loadgen: mongodb-loadjob/loadgen: mongodb-loadjob-cstor/g' \
--e 's/value: app-mongo-ns/value: mongocstor/g' run_test.yml
+sed -i -e 's/loadgen: cassandra-loadjob/loadgen: cassandra-loadjob-cstor/g' \
+-e 's/value: app-cass-ns/value: cassandra-cstor/g' run_test.yml
 
 sed -i '/command:/i \
           - name: RUN_ID\
             value: '"$run_id"'\
 ' run_test.yml
 
+
 #################
 ## RUNNER MAIN ##
 #################
 
 echo "Running the litmus test.."
-${utils_path}/litmus_job_runner label='loadgen:mongodb-loadjob-cstor' job=run_test.yml
+${utils_path}/litmus_job_runner label='loadgen:cassandra-loadjob-cstor' job=run_test.yml
 ${utils_path}/task_delimiter;
 
 echo "Dumping state of cluster post job run"; echo ""
@@ -61,5 +62,4 @@ ${utils_path}/task_delimiter;
 
 ## Check the test status & result from the litmus result custom resource
 ${utils_path}/get_litmus_result ${test_name}
-
 

@@ -137,6 +137,25 @@ mongo-cstor-run/load/check 1:2:
   script: 
    - ./script/apps/mongo/workload/cstor/mongo-app-workload-cstor
 
+# CASSANDRA_CSTOR
+cassandra-cstor-run/load/check 0:2:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/cassandra/deployer/cassandra-app-deploy-cstor
+
+cassandra-cstor-run/load/check 1:2:
+  extends: .app_deploy_template
+  before_script:
+   - sleep 180
+  script:
+   - ./script/apps/cassandra/workload/cstor/cassandra-app-workload-cstor
+
+# JENKINS_CSTOR
+jenkins-cstor-run/load/check:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/jenkins/deployer/jenkins-app-deploy-cstor 
+
 ## Define job template for func test jobs  
 
 .func_test_template:
@@ -171,6 +190,16 @@ snapshot-clone-creation-{percona-jiva}:
   extends: .func_test_template
   script:
    - ./script/apps/percona/functional/jiva/k8s-snapshot-clone
+
+app-replica-scale-{cassandra-cstor}:
+  extends: .func_test_template #dependencies: cassandra-cstor
+  script:
+   - ./script/apps/cassandra/functional/cstor/app-sts-replica-scale
+
+app-upgrade-deployment-{jenkins-cstor}:
+  extends: .func_test_template #dependencies: jenkins-cstor
+  script:
+   - ./script/apps/jenkins/functional/cstor/app-upgrade-deployment
 
 ## Define job template for chaos jobs 
 

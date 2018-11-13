@@ -5,8 +5,10 @@ set -x
 ## ENVIRONMENT ##
 #################
 
+#utils_path="/openebs/e2e-aws/script/utils"
+
 ## https://github.com/openebs/litmus/blob/master/apps/percona/deployers/test_vars.yml
-test_name=$(${utils_path}/generate_test_name testcase=percona-deployment metadata=cstor)
+run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=percona-deployment metadata=${run_id})
  
 ###################
 ## DEPENDENCIES  ##
@@ -43,7 +45,7 @@ sed -i -e 's/app: percona-deployment/app: percona-deployment-cstor/g' \
 
 sed -i '/command:/i \
           - name: RUN_ID\
-            value: '"$run_metadata"'\
+            value: '"$run_id"'\
 ' run_test.yml
 
 #################
