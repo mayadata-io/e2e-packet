@@ -186,7 +186,7 @@ volume-memory-consumption-{memcheck-jiva}:
   script:
    - ./script/apps/memleak/tests/jiva/memory-consumption
 
-snapshot-clone-creation-{percona-jiva}:
+k8s-snapshot-clone-creation-{percona-jiva}:
   extends: .func_test_template
   script:
    - ./script/apps/percona/functional/jiva/k8s-snapshot-clone
@@ -230,6 +230,11 @@ ctrl-disconnect-{postgres-jiva}:
   extends: .chaos_test_template #dependencies: postgres-jiva
   script:
    - ./script/apps/postgres/chaos/jiva/volume-controller-network-delay
+
+app-kill-{jenkins-cstor}:
+  extends: .chaos_test_template #dependencies: jenkins-cstor
+  script:
+   - ./script/apps/jenkins/chaos/cstor/application-pod-failure
 
 tgt-kill-{percona-cstor}:
   extends: .chaos_test_template #dependencies: percona-cstor
