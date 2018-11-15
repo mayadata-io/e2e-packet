@@ -28,7 +28,7 @@ cd litmus
 ## LITMUS PRECONDITIONING ##
 ############################
 
-cp apps/cassandra/functional/run_litmus_test.yml run_test.yml
+cp apps/cassandra/functional/scale_replicas/run_litmus_test.yml run_test.yml
 
 #################
 ## RUNNER MAIN ##

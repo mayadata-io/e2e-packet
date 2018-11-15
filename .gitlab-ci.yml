@@ -177,9 +177,14 @@ app-upgrade-deployment-{jenkins-jiva}:
    - ./script/apps/jenkins/functional/jiva/app-upgrade-deployment
 
 volume-data-integrity-{fio-jiva}:
-  extends: .func_test_template #dependencies: jenkins-jiva
+  extends: .func_test_template 
   script:
    - ./script/apps/fio/tests/jiva/fio-volume-data-integrity-check
+
+volume-data-integrity-{fio-cstor}:
+  extends: .func_test_template
+  script:
+   - ./script/apps/fio/tests/cstor/fio-volume-data-integrity-check
 
 volume-memory-consumption-{memcheck-jiva}:  
   extends: .func_test_template 
