@@ -40,7 +40,7 @@ EOF
 
 cp apps/percona/deployers/run_litmus_test.yml run_test.yml
 sed -i -e 's/app: percona-deployment/app: percona-deployment-cstor/g' \
--e 's/value: openebs-standard/value: openebs-cstor-sparse/g' \
+-e 's/value: openebs-standalone/value: openebs-cstor-sparse/g' \
 -e 's/value: app-percona-ns/value: percona-cstor/g' run_test.yml
 
 sed -i '/command:/i \
