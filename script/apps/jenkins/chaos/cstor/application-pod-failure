@@ -6,7 +6,7 @@ set -x
 #################
 
 ## https://github.com/openebs/litmus/blob/master/apps/percona/chaos/openebs_target_failure/test_vars.yml
-run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=openebs-target-failure metadata=${run_id})
+run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=application-pod-failure metadata=${run_id})
 
 ###################
 ## DEPENDENCIES  ##
@@ -22,19 +22,22 @@ cd litmus
 ## LITMUS PRECONDITIONING ##
 ############################
 
+## TODO: Add logic to replace job ENV (SC, PVC, LABEL, NS) based on run instance intent 
+## TODO: Add logic to add ENV for run_instance_metadata/RunID
+
 : << EOF
   ----------------------------------------------------------------------------------------
  | specAttribute        | kind     | jiva                   | cStor-sparse                 |
   ---------------------------------------------------------------------------------------- |
- | litmusJobLabel       | jobSpec  | openebs-target-failure | openebs-target-failure-cstor |
- | appNamespace         | env      | app-percona-ns         | percona-cstor                |
- | runID                | env(add) |    -                   | cstor 		           | 
+ | litmusJobLabel       | jobSpec  | openebs-target-failure | application-pod-failure-cstor |
+ | appNamespace         | env      | app-jenkins-ns         | jenkins-cstor                 |
+ | runID                | env(add) |    -                   | cstor 		            | 
   ----------------------------------------------------------------------------------------
 EOF
 
-cp apps/percona/chaos/openebs_target_failure/run_litmus_test.yml run_test.yml
-sed -i -e 's/name: openebs-target-failure/name: openebs-target-failure-cstor/g' \
--e 's/value: app-percona-ns/value: percona-cstor/g' run_test.yml
+cp apps/jenkins/chaos/app_pod_failure/run_litmus_test.yml run_test.yml
+sed -i -e 's/name: application-pod-failure/name: application-pod-failure-cstor/g' \
+-e 's/value: app-jenkins-ns/value: jenkins-cstor/g' run_test.yml
 
 sed -i '/command:/i \
           - name: RUN_ID\
@@ -46,7 +49,7 @@ sed -i '/command:/i \
 #################
 
 echo "Running the litmus test.."
-${utils_path}/litmus_job_runner label='name:openebs-target-failure-cstor' job=run_test.yml
+${utils_path}/litmus_job_runner label='name:application-pod-failure-cstor' job=run_test.yml
 ${utils_path}/task_delimiter;
 
 echo "Dumping state of cluster post job run"; echo ""
@@ -59,3 +62,5 @@ ${utils_path}/task_delimiter;
 
 ## Check the test status & result from the litmus result custom resource
 ${utils_path}/get_litmus_result ${test_name}
+
+

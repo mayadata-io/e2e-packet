@@ -10,6 +10,9 @@ stages:
   - APP-CHAOS-TEST
   - CLUSTER-CLEANUP
 
+variables: 
+  utils_path: "/openebs/e2e-packet/script/utils"
+
 # Setup the kubernetes cluster
 
 packet-cluster:
@@ -134,6 +137,25 @@ mongo-cstor-run/load/check 1:2:
   script: 
    - ./script/apps/mongo/workload/cstor/mongo-app-workload-cstor
 
+# CASSANDRA_CSTOR
+cassandra-cstor-run/load/check 0:2:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/cassandra/deployer/cassandra-app-deploy-cstor
+
+cassandra-cstor-run/load/check 1:2:
+  extends: .app_deploy_template
+  before_script:
+   - sleep 180
+  script:
+   - ./script/apps/cassandra/workload/cstor/cassandra-app-workload-cstor
+
+# JENKINS_CSTOR
+jenkins-cstor-run/load/check:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/jenkins/deployer/jenkins-app-deploy-cstor 
+
 ## Define job template for func test jobs  
 
 .func_test_template:
@@ -155,19 +177,34 @@ app-upgrade-deployment-{jenkins-jiva}:
    - ./script/apps/jenkins/functional/jiva/app-upgrade-deployment
 
 volume-data-integrity-{fio-jiva}:
-  extends: .func_test_template #dependencies: jenkins-jiva
+  extends: .func_test_template 
   script:
    - ./script/apps/fio/tests/jiva/fio-volume-data-integrity-check
+
+volume-data-integrity-{fio-cstor}:
+  extends: .func_test_template
+  script:
+   - ./script/apps/fio/tests/cstor/fio-volume-data-integrity-check
 
 volume-memory-consumption-{memcheck-jiva}:  
   extends: .func_test_template 
   script:
    - ./script/apps/memleak/tests/jiva/memory-consumption
 
-snapshot-clone-creation-{percona-jiva}:
+k8s-snapshot-clone-creation-{percona-jiva}:
   extends: .func_test_template
   script:
    - ./script/apps/percona/functional/jiva/k8s-snapshot-clone
+
+app-replica-scale-{cassandra-cstor}:
+  extends: .func_test_template #dependencies: cassandra-cstor
+  script:
+   - ./script/apps/cassandra/functional/cstor/app-sts-replica-scale
+
+app-upgrade-deployment-{jenkins-cstor}:
+  extends: .func_test_template #dependencies: jenkins-cstor
+  script:
+   - ./script/apps/jenkins/functional/cstor/app-upgrade-deployment
 
 ## Define job template for chaos jobs 
 
@@ -198,6 +235,11 @@ ctrl-disconnect-{postgres-jiva}:
   extends: .chaos_test_template #dependencies: postgres-jiva
   script:
    - ./script/apps/postgres/chaos/jiva/volume-controller-network-delay
+
+app-kill-{jenkins-cstor}:
+  extends: .chaos_test_template #dependencies: jenkins-cstor
+  script:
+   - ./script/apps/jenkins/chaos/cstor/application-pod-failure
 
 tgt-kill-{percona-cstor}:
   extends: .chaos_test_template #dependencies: percona-cstor
