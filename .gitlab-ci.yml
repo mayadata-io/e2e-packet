@@ -8,6 +8,7 @@ stages:
   - STATEFUL-APP-DEPLOY
   - APP-FUNC-TEST
   - APP-CHAOS-TEST
+  - APP-DEPROVISION
   - CLUSTER-CLEANUP
 
 variables: 
@@ -36,6 +37,18 @@ openebs-packet-deploy:
     - packet-cluster
   script: 
    - ./script/provider/infra-setup
+  artifacts:
+    paths:
+      - openebs-packet/
+
+openebs-sc-deploy:
+  image: atulabhi/kops:v8
+  stage: PROVIDER-INFRA-SETUP
+  dependencies:
+    - packet-cluster
+  script:
+   - chmod 775 ./script/provider/setup-sc
+   - ./script/provider/setup-sc
   artifacts:
     paths:
       - openebs-packet/
@@ -156,6 +169,12 @@ jenkins-cstor-run/load/check:
   script:
    - ./script/apps/jenkins/deployer/jenkins-app-deploy-cstor 
 
+# PROMETHEUS-CSTOR
+prometheus-cstor-run/load/check:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/prometheus/deployer/prometheus-app-deploy-cstor
+
 ## Define job template for func test jobs  
 
 .func_test_template:
@@ -190,6 +209,12 @@ volume-memory-consumption-{memcheck-jiva}:
   extends: .func_test_template 
   script:
    - ./script/apps/memleak/tests/jiva/memory-consumption
+
+volume-memory-consumption-{memcheck-cstor}:
+  extends: .func_test_template #dependencies: prometheus-cstor
+  script:
+   - chmod 775 ./script/apps/prometheus/functional/cstor/memcheck/memory-consumption
+   - ./script/apps/prometheus/functional/cstor/memcheck/memory-consumption
 
 k8s-snapshot-clone-creation-{percona-jiva}:
   extends: .func_test_template
@@ -241,6 +266,11 @@ app-kill-{jenkins-cstor}:
   script:
    - ./script/apps/jenkins/chaos/cstor/application-pod-failure
 
+app-kill-{mongo-jiva-xfs}:
+  extends: .chaos_test_template #dependencies: mongo-jiva
+  script:
+   - ./script/apps/mongo/chaos/jiva/application-pod-failure
+
 tgt-kill-{percona-cstor}:
   extends: .chaos_test_template #dependencies: percona-cstor
   script:
@@ -250,6 +280,51 @@ tgt-disconnect-{mongo-cstor}:
   extends: .chaos_test_template #dependencies: mongo-cstor
   script:
    - ./script/apps/mongo/chaos/cstor/volume-target-network-delay
+
+.app_deprovision_template:
+  image: atulabhi/kops:v8
+  stage: APP-DEPROVISION
+  dependencies:
+    - openebs-packet-deploy
+  artifacts:
+    paths:
+     - openebs-packet/
+
+## PERCONA-JIVA
+percona-jiva-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/percona/deprovision/percona-app-deprovision-jiva
+
+## PROMETHEUS-CSTOR
+prometheus-cstor-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/prometheus/deprovision/prometheus-app-deprovision-cstor
+
+## MONGODB-JIVA
+mongodb-jiva-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/mongo/deprovision/mongo-app-deprovision-jiva
+
+## POSTGRES-JIVA
+postgres-jiva-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/postgres/deprovision/postgres-app-deprovision-jiva
+
+## JENKINS-JIVA
+jenkins-jiva-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/jenkins/deprovision/jenkins-app-deprovision-jiva
+
+## CASSANDRA-JIVA
+cassandra-jiva-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/cassandra/deprovision/cassandra-app-deprovision-jiva
 
 cleanup-packet:
   when: always
