@@ -284,8 +284,7 @@ tgt-disconnect-{mongo-cstor}:
 .app_deprovision_template:
   image: atulabhi/kops:v8
   stage: APP-DEPROVISION
-  dependencies:
-    - openebs-packet-deploy
+  when: always
   artifacts:
     paths:
      - openebs-packet/
