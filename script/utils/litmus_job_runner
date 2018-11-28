@@ -28,14 +28,29 @@ jobStateCmd="kubectl get pod ${litmus_pod} --no-headers -n litmus -o custom-colu
 
 ## TODO: Consider cases where litmus pod is evicted
 
-while [[ ! $(eval ${containerStateCmd}) =~ 'terminated' ]]; do
-  sleep 1 
-done 
-
-while [[ $(eval ${jobStateCmd}) =~ 'Running' ]]; do
-   sleep 1
+while true; do
+  cstate=$(eval ${containerStateCmd}); rc=$?
+  if [[ $rc -eq 0 && ! -z $cstate ]]; then
+    if [[ ! $cstate =~ 'terminated' ]]; then
+      sleep 10
+    else break;
+    fi
+  else
+    echo "unable to get litmus container status"; exit 1
+  fi
 done
 
+while true; do
+  jstate=$(eval ${jobStateCmd}); rc=$?
+  if [[ $rc -eq 0 && ! -z $jstate ]]; then
+    if [[ $jstate =~ 'Running' ]]; then
+      sleep 10
+    else break;
+    fi
+  else
+    echo "unable to get litmus job status"; exit 1
+  fi
+done
 echo "Litmus test run Job has completed"
 
 ${utils_path}/task_delimiter;
