@@ -106,17 +106,17 @@ postgres-jiva-run/load/check 1:2:
    - ./script/apps/postgres/workload/jiva/postgres-app-workload-jiva
 
 # CASSANDRA-JIVA
-cassandra-jiva-run/load/check 0:2:
+cassandra-jiva-run/load/check:
   extends: .app_deploy_template
   script: 
    - ./script/apps/cassandra/deployer/cassandra-app-deploy-jiva
 
-cassandra-jiva-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script: 
-   - sleep 180
-  script: 
-   - ./script/apps/cassandra/workload/jiva/cassandra-app-workload-jiva
+     #cassandra-jiva-run/load/check 1:2:
+     #  extends: .app_deploy_template
+     #  before_script: 
+     #   - sleep 180
+     #  script: 
+     #   - ./script/apps/cassandra/workload/jiva/cassandra-app-workload-jiva
 
 # JENKINS-JIVA
 jenkins-jiva-run/load/check:
@@ -151,17 +151,17 @@ mongo-cstor-run/load/check 1:2:
    - ./script/apps/mongo/workload/cstor/mongo-app-workload-cstor
 
 # CASSANDRA_CSTOR
-cassandra-cstor-run/load/check 0:2:
+cassandra-cstor-run/load/check:
   extends: .app_deploy_template
   script:
    - ./script/apps/cassandra/deployer/cassandra-app-deploy-cstor
 
-cassandra-cstor-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script:
-   - sleep 180
-  script:
-   - ./script/apps/cassandra/workload/cstor/cassandra-app-workload-cstor
+     #cassandra-cstor-run/load/check 1:2:
+     #  extends: .app_deploy_template
+     #  before_script:
+     #   - sleep 180
+     #  script:
+     #   - ./script/apps/cassandra/workload/cstor/cassandra-app-workload-cstor
 
 # JENKINS_CSTOR
 jenkins-cstor-run/load/check:
