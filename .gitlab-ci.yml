@@ -227,6 +227,13 @@ k8s-snapshot-clone-creation-{percona-jiva}:
   script:
    - ./script/apps/percona/functional/jiva/k8s-snapshot-clone
 
+# K8s-snapshot/clone test on cStor volume
+cstor-k8s-snapshot-clone-creation-{snapshot-clone-cStor}:
+  extends: .func_test_template
+  script:
+   - ./script/apps/percona/functional/cstor/k8s-snapshot-clone-cstor
+
+
 app-replica-scale-{cassandra-cstor}:
   extends: .func_test_template #dependencies: cassandra-cstor
   script:
