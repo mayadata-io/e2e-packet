@@ -35,7 +35,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies infra-setup 
 
 for i in efk-vars.yml efk.yml get_url.yml; do
-  wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/production/efk-client/playbook/$i
+  wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/workload/efk-client/playbook/$i
 done
 
 echo "EFK: Deploying Aggregrator and Forwarder on client"
