@@ -244,6 +244,16 @@ app-upgrade-deployment-{jenkins-cstor}:
   script:
    - ./script/apps/jenkins/functional/cstor/app-upgrade-deployment
 
+Snapshot-rebuild-single-replica-{percona-cstor}:
+  extends: .func_test_template
+  script:
+   - ./script/apps/percona/functional/cstor/snapshot-rebuild-single-rep
+
+Snapshot-rebuild-multiple-replica-{percona-cstor}:
+  extends: .func_test_template
+  script:
+   - ./script/apps/percona/functional/cstor/snapshot-rebuild-multiple-rep   
+
 ## Define job template for chaos jobs 
 
 .chaos_test_template:
