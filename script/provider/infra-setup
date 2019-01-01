@@ -17,6 +17,16 @@ export OPENEBS_IO_JIVA_REPLICA_IMAGE=$(eval python env_exporter.py -o jreplica -
 export MAYA_APISERVER_IMAGE=$(eval python env_exporter.py -o mapi -fp ../baseline/baseline)
 ##exporting maya-volume-exporter as env##
 export OPENEBS_IO_VOLUME_MONITOR_IMAGE=$(eval python env_exporter.py -o iovolume -fp ../baseline/baseline)
+##exporting istgt-image as env##
+export OPENEBS_IO_CSTOR_VOLUME_MGMT_IMAGE=$(eval python env_exporter.py -o cvolmgmt -fp ../baseline/baseline)
+##exporting zfs-image as env##
+export OPENEBS_IO_CSTOR_POOL_MGMT_IMAGE=$(eval python env_exporter.py -o cpoolmgmt -fp ../baseline/baseline)
+##
+export OPENEBS_IO_CSTOR_POOL_IMAGE=$(eval python env_exporter.py -o cstorpool -fp ../baseline/baseline)
+##
+export OPENEBS_IO_CSTOR_TARGET_IMAGE=$(eval python env_exporter.py -o target -fp ../baseline/baseline)
+##
+
 cd $present_dir
 
 test_name=$(${utils_path}/generate_test_name testcase=openebsinstaller metadata="")
