@@ -7,7 +7,7 @@ kubectl get po -n gitlab-runner
 kubectl get pods -n gitlab-runner -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '$2 <= "'$(date -d'now-6 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | grep "runner.*project-6" | xargs --no-run-if-empty kubectl delete pod -n gitlab-runner
 
 echo "creating packet-cluster"
-mkdir ~/.kube   /openebs/e2e-packet/cluster /openebs/e2e-packet/cluster/ssh /openebs/e2e-packet/cluster/.kube
+mkdir -p ~/.kube   /openebs/e2e-packet/cluster /openebs/e2e-packet/cluster/ssh /openebs/e2e-packet/cluster/.kube
 export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/openebs/litmus.git
 cd litmus/k8s/packet/k8s-installer
