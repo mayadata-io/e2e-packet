@@ -26,7 +26,7 @@ cd litmus
 cp apps/percona/chaos/cstor_pool_scale/run_litmus_test.yml run_test.yml
 sed -i 's/value: app-percona-ns/value: percona-cstor/g' run_test.yml
 
-#################
+#################   
 ## RUNNER MAIN ##
 #################
 
