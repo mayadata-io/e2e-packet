@@ -79,6 +79,12 @@ percona-jiva-run/load/check 1:2:
   script: 
    - ./script/apps/percona/workload/jiva/percona-app-workload-jiva
 
+## NUODB-CSTOR
+nuodb-cstor-run/load:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/nuodb/deployer/nuodb-app-deploy-cstor
+
 ## PERCONA-JIVA-SINGLE-REPLICA
 percona-jiva-single-replica-run/load/check:
   extends: .app_deploy_template
