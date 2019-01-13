@@ -1,13 +1,9 @@
 #!/bin/bash
 set -e
 
-#---------------------Runner Cleanup-----------------------------------
-
-kubectl get po -n gitlab-runner
-kubectl get pods -n gitlab-runner -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '$2 <= "'$(date -d'now-6 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | grep "runner.*project-6" | xargs --no-run-if-empty kubectl delete pod -n gitlab-runner
-
+path=$(pwd)
 echo "creating packet-cluster"
-mkdir -p ~/.kube   /openebs/e2e-packet/cluster /openebs/e2e-packet/cluster/ssh /openebs/e2e-packet/cluster/.kube
+mkdir -p ~/.kube   $path/cluster $path/cluster/ssh $path/cluster/.kube
 export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/openebs/litmus.git
 cd litmus/k8s/packet/k8s-installer
@@ -16,10 +12,11 @@ ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.10.0-00" 
 kubectl get nodes
 kubectl get pods --all-namespaces
 kubectl apply -f https://raw.githubusercontent.com/openebs/litmus/master/hack/rbac.yaml
-cp -r /tmp/packet/. /openebs/e2e-packet/cluster/
-cat ~/.kube/config > /openebs/e2e-packet/cluster/.kube/admin.conf
-cp -r ~/.kube/. /openebs/e2e-packet/cluster/.kube/
-cp -r ~/.ssh/. /openebs/e2e-packet/cluster/ssh
-kubectl create configmap kubeconfig --from-file=/openebs/e2e-packet/cluster/.kube/admin.conf -n litmus
+cp -r /tmp/packet/. $path/cluster/
+cat ~/.kube/config > $path/cluster/.kube/admin.conf
+cp -r ~/.kube/. $path/cluster/.kube/
+cp -r ~/.ssh/. $path/cluster/ssh
+kubectl create configmap kubeconfig --from-file=$path/cluster/.kube/admin.conf -n litmus
 kubectl get pods --all-namespaces
 kubectl get nodes
+
