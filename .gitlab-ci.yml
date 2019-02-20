@@ -23,6 +23,7 @@ packet-cluster:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
     - chmod 755 ./script/packet
+    - echo "PIPELINEMODE=$CI_PIPELINE_SOURCE"
     - ./script/packet
   artifacts:
     paths:
