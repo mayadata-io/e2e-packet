@@ -17,7 +17,7 @@ variables:
 # Setup the kubernetes cluster
 
 packet-cluster:
-  image: openebs/packet-ci:latest
+  image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
