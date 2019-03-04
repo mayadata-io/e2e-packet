@@ -31,7 +31,7 @@ packet-cluster:
 ## Setup OpenEBS control plane
 
 openebs-packet-deploy:
-  image: openebs/packet-ci:latest
+  image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   dependencies:
     - packet-cluster
@@ -42,7 +42,7 @@ openebs-packet-deploy:
       - openebs-packet/
 
 openebs-sc-deploy:
-  image: openebs/packet-ci:latest
+  image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   dependencies:
     - packet-cluster
@@ -56,7 +56,7 @@ openebs-sc-deploy:
 ## Define a job template for app deployers
 
 .app_deploy_template:
-  image: openebs/packet-ci:latest
+  image: atulabhi/kops:v8
   stage: STATEFUL-APP-DEPLOY 
   dependencies:
     - openebs-packet-deploy
@@ -190,7 +190,7 @@ prometheus-cstor-run/load/check:
 ## Define job template for func test jobs  
 
 .func_test_template:
-  image: openebs/packet-ci:latest
+  image: atulabhi/kops:v8
   stage: APP-FUNC-TEST
   when: always 
   artifacts:
@@ -253,7 +253,7 @@ app-upgrade-deployment-{jenkins-cstor}:
 ## Define job template for chaos jobs 
 
 .chaos_test_template:
-  image: openebs/packet-ci:latest
+  image: atulabhi/kops:v8
   stage: APP-CHAOS-TEST
   when: always 
   artifacts:
@@ -307,7 +307,7 @@ tgt-disconnect-{mongo-cstor}:
    - ./script/apps/mongo/chaos/cstor/volume-target-network-delay
 
 .app_deprovision_template:
-  image: openebs/packet-ci:latest
+  image: atulabhi/kops:v8
   stage: APP-DEPROVISION
   when: always
   artifacts:
