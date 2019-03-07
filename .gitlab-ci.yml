@@ -18,7 +18,9 @@ variables:
 
 packet-cluster:
   image: chandankumar4/packet:v4
-  stage: CLUSTER-SETUP 
+  stage: CLUSTER-SETUP
+  tags: 
+    - k8s-1-11 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -33,6 +35,8 @@ packet-cluster:
 openebs-packet-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-11
   dependencies:
     - packet-cluster
   script: 
@@ -44,6 +48,8 @@ openebs-packet-deploy:
 openebs-sc-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-11
   dependencies:
     - packet-cluster
   script:
@@ -57,7 +63,9 @@ openebs-sc-deploy:
 
 .app_deploy_template:
   image: atulabhi/kops:v8
-  stage: STATEFUL-APP-DEPLOY 
+  stage: STATEFUL-APP-DEPLOY
+  tags: 
+    - k8s-1-11 
   dependencies:
     - openebs-packet-deploy
   artifacts:
@@ -192,6 +200,8 @@ prometheus-cstor-run/load/check:
 .func_test_template:
   image: atulabhi/kops:v8
   stage: APP-FUNC-TEST
+  tags: 
+    - k8s-1-11
   when: always 
   artifacts:
     paths: 
@@ -255,6 +265,8 @@ app-upgrade-deployment-{jenkins-cstor}:
 .chaos_test_template:
   image: atulabhi/kops:v8
   stage: APP-CHAOS-TEST
+  tags: 
+    - k8s-1-11
   when: always 
   artifacts:
     paths: 
@@ -309,6 +321,8 @@ tgt-disconnect-{mongo-cstor}:
 .app_deprovision_template:
   image: atulabhi/kops:v8
   stage: APP-DEPROVISION
+  tags: 
+    - k8s-1-11
   when: always
   artifacts:
     paths:
@@ -356,6 +370,8 @@ cleanup-packet:
   dependencies:
     - packet-cluster
   stage: CLUSTER-CLEANUP
+  tags: 
+    - k8s-1-11
   script: 
     - chmod 755 ./script/packet-cleanup
     - ./script/packet-cleanup
