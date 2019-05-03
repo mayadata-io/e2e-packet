@@ -21,14 +21,14 @@ ${utils_path}/setup_dependencies litmus-test
 #git clone https://github.com/atulabhi/litmus.git
 #cd litmus; git checkout v0.7-RC1
 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
 ## LITMUS PRECONDITIONING ##
 ############################
 
-cp apps/cassandra/functional/scale_replicas/run_litmus_test.yml run_test.yml
+cp experiments/functional/scale_app_replica/run_litmus_test.yml run_test.yml
 
 #################
 ## RUNNER MAIN ##
