@@ -14,7 +14,7 @@ run_id="deprovision";test_name=$(${utils_path}/generate_test_name testcase=postg
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, checkout the e2e branch, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################

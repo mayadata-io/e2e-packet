@@ -14,7 +14,7 @@ run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=cassandra-d
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################

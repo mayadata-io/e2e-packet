@@ -15,7 +15,7 @@ run_id="cstor";test_name=$(${utils_path}/generate_test_name testcase=fio-data-in
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
@@ -32,7 +32,7 @@ cd litmus
   -------------------------------------------------------------------------------------------
 EOF
 
-cp apps/fio/tests/data-integrity/run_litmus_test.yml run_test.yml
+cp experiments/functional/fio/data-integrity/run_litmus_test.yml run_test.yml
 sed -i -e 's/app: fio-di-litmus/app: fio-di-litmus-cstor/g' \
 -e 's/value: openebs-standard/value: openebs-cstor-sparse/g' \
 -e 's/value: fio/value: fio-cstor/g' run_test.yml

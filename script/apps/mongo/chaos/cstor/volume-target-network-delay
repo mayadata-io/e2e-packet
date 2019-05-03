@@ -16,7 +16,7 @@ ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
@@ -35,7 +35,7 @@ cd litmus
   ----------------------------------------------------------------------------------------------------
 EOF
 
-cp apps/percona/chaos/openebs_target_network_delay/run_litmus_test.yml run_test.yml
+cp experiments/chaos/openebs_target_network_delay/run_litmus_test.yml run_test.yml
 
 sed -i -e 's/name: openebs-target-network-delay/name: openebs-target-network-delay-cstor/g' \
 -e 's/value: app-percona-ns/value: mongocstor/g' \
