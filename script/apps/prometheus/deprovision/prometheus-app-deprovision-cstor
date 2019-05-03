@@ -16,7 +16,7 @@ run_id="cstor-deprovision";test_name=$(${utils_path}/generate_test_name testcase
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################

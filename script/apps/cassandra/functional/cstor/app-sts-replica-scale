@@ -15,7 +15,7 @@ ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
@@ -32,7 +32,7 @@ cd litmus
   -------------------------------------------------------------------------------------- 
 EOF
 
-cp apps/cassandra/functional/scale_replicas/run_litmus_test.yml run_test.yml
+cp experiments/functional/scale_app_replica/run_litmus_test.yml run_test.yml
 sed -i -e 's/app: cassandra-scaleup-litmus/app: cassandra-scaleup-cstor/g' \
 -e 's/value: app-cass-ns/value: cassandra-cstor/g' run_test.yml
 

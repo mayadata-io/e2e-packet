@@ -18,14 +18,14 @@ ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, checkout the e2e branch, navigate to litmus root 
 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
 ## LITMUS PRECONDITIONING ##
 ############################
 
-cp apps/custom/tests/memcheck/run_litmus_test.yml run_test.yml
+cp experiments/functional/custom/tests/memcheck/run_litmus_test.yml run_test.yml
 
 #################
 ## RUNNER MAIN ##

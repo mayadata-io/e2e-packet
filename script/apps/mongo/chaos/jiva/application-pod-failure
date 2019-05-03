@@ -15,7 +15,7 @@ run_id="";test_name=$(${utils_path}/generate_test_name testcase=application-pod-
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
@@ -36,7 +36,7 @@ cd litmus
   ------------------------------------------------------------------------------------------
 EOF
 
-cp apps/jenkins/chaos/app_pod_failure/run_litmus_test.yml run_test.yml
+cp experiments/chaos/app_pod_failure/run_litmus_test.yml run_test.yml
 sed -i -e 's/name: application-pod-failure/name: application-pod-failure-mongo/g' \
 -e 's/value: app-jenkins-ns/value: app-mongo-ns/g' \
 -e 's/''app=jenkins-app''/''app=mongo''/g' \
