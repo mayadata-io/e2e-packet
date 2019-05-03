@@ -5,13 +5,13 @@ path=$(pwd)
 echo "creating packet-cluster"
 mkdir -p ~/.kube   $path/cluster $path/cluster/ssh $path/cluster/.kube
 export PACKET_API_TOKEN=$packet_api_token
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus/k8s/packet/k8s-installer
 echo "--------------- creating packet cluster --------------------"
 ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.11.9-00" -v
 kubectl get nodes
 kubectl get pods --all-namespaces
-kubectl apply -f https://raw.githubusercontent.com/openebs/litmus/master/hack/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/hack/rbac.yaml
 cp -r /tmp/packet/. $path/cluster/
 cat ~/.kube/config > $path/cluster/.kube/admin.conf
 cp -r ~/.kube/. $path/cluster/.kube/
