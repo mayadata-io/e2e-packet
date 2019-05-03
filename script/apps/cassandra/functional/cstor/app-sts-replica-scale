@@ -32,7 +32,7 @@ cd litmus
   -------------------------------------------------------------------------------------- 
 EOF
 
-cp app/functional/scale_app_replica/run_litmus_test.yml run_test.yml
+cp experiments/functional/scale_app_replica/run_litmus_test.yml run_test.yml
 sed -i -e 's/app: cassandra-scaleup-litmus/app: cassandra-scaleup-cstor/g' \
 -e 's/value: app-cass-ns/value: cassandra-cstor/g' run_test.yml
 
