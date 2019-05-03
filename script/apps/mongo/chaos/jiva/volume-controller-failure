@@ -15,7 +15,7 @@ test_name=$(${utils_path}/generate_test_name testcase=openebs-target-failure met
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
@@ -34,7 +34,7 @@ cd litmus
   ----------------------------------------------------------------------------------
 EOF
 
-cp apps/percona/chaos/openebs_target_failure/run_litmus_test.yml run_test.yml
+cp experiments/chaos/openebs_target_failure/run_litmus_test.yml run_test.yml
 
 sed -i -e 's/''name=percona''/''app=mongo''/g' \
 -e 's/value: app-percona-ns/value: app-mongo-ns/g' \

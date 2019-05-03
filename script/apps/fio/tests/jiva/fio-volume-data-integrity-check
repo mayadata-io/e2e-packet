@@ -15,14 +15,14 @@ test_name=$(${utils_path}/generate_test_name testcase=fio-data-integrity metadat
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/litmuschaos/litmus.git
 cd litmus
 
 ############################
 ## LITMUS PRECONDITIONING ##
 ############################
 
-cp apps/fio/tests/data-integrity/run_litmus_test.yml run_test.yml
+cp experiments/functional/fio/data-integrity/run_litmus_test.yml run_test.yml
 
 #################
 ## RUNNER MAIN ##
