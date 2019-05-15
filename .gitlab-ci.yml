@@ -87,6 +87,11 @@ percona-jiva-run/load/check 1:2:
   script: 
    - ./script/apps/percona/workload/jiva/percona-app-workload-jiva
 
+busybox-sts-localpv:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/busybox/deployer/busybox-deploy-localpv
+     
 ## NUODB-CSTOR
 nuodb-cstor-run/load:
   extends: .app_deploy_template
