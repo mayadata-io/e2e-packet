@@ -11,7 +11,8 @@ echo "--------------- creating packet cluster --------------------"
 ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.10.0-00" -v
 kubectl get nodes
 kubectl get pods --all-namespaces
-kubectl apply -f https://raw.githubusercontent.com/openebs/litmus/master/hack/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/hack/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/hack/crds.yaml
 cp -r /tmp/packet/. $path/cluster/
 cat ~/.kube/config > $path/cluster/.kube/admin.conf
 cp -r ~/.kube/. $path/cluster/.kube/
