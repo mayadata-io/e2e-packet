@@ -20,4 +20,8 @@ cp -r ~/.ssh/. $path/cluster/ssh
 kubectl create configmap kubeconfig --from-file=$path/cluster/.kube/admin.conf -n litmus
 kubectl get pods --all-namespaces
 kubectl get nodes
+echo "--------------Attaching disks to the nodes------------------"
+cd ../packet-storage
+ansible-playbook create-volume.yml -vv --extra-vars "packet_api=$packet_api_token"
+cp -r /tmp $path/cluster/
 

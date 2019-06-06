@@ -13,4 +13,7 @@ git clone https://github.com/litmuschaos/litmus.git
 cd litmus/k8s/packet/k8s-installer
 echo "--------------- deleting packet cluster --------------------"
 ansible-playbook delete_packet_cluster.yml -vv
+echo "----------------deleting volumes ---------------------------"
+cp -r $path/cluster/packet /tmp/
+ansible-playbook delete-volume.yml -vv --extra-vars "packet_api=$packet_api_token"
 
