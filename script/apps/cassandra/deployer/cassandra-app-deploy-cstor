@@ -26,7 +26,7 @@ cd litmus
  | specAttribute        | kind	   | jiva        	               | cStor-sparse  	          |
   -------------------------------------------------------------------------------------------
  | litmusJobLabel       | jobSpec  | cassandra-deployment-litmus | casandra-deployment-cstor|
- | providerStorageClass | env 	   | openebs-standalone          | openebs-cstor-sparse     |
+ | providerStorageClass | env 	   | openebs-standalone          | openebs-cstor-disk       |
  | appNamespace         | env	     | app-cass-ns                 | cassandra-cstor          |
  | runID		            | env(add) | 	-	         	               | cstor                    |
  | volume capacity      | env      | 5G                          | 15G                      |
