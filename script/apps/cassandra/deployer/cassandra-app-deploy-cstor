@@ -23,19 +23,21 @@ cd litmus
 
 : << EOF
   -------------------------------------------------------------------------------------------
- | specAttribute        | kind	   | jiva        	         | cStor-sparse  	    |
+ | specAttribute        | kind	   | jiva        	               | cStor-sparse  	          |
   -------------------------------------------------------------------------------------------
  | litmusJobLabel       | jobSpec  | cassandra-deployment-litmus | casandra-deployment-cstor|
  | providerStorageClass | env 	   | openebs-standalone          | openebs-cstor-sparse     |
- | appNamespace         | env	   | app-cass-ns                 | cassandra-cstor          |
- | runID		| env(add) | 	-	         	 | cstor                    |
+ | appNamespace         | env	     | app-cass-ns                 | cassandra-cstor          |
+ | runID		            | env(add) | 	-	         	               | cstor                    |
+ | volume capacity      | env      | 5G                          | 15G                      |
   -------------------------------------------------------------------------------------------
 EOF
 
 cp apps/cassandra/deployers/run_litmus_test.yml run_test.yml
 sed -i -e 's/app: cassandra-deployment-litmus/app: cassandra-deployment-cstor/g' \
--e 's/value: openebs-standalone/value: openebs-cstor-sparse/g' \
--e 's/value: app-cass-ns/value: cassandra-cstor/g' run_test.yml
+-e 's/value: openebs-standalone/value: openebs-cstor-disk/g' \
+-e 's/value: app-cass-ns/value: cassandra-cstor/g' \
+-e 's/value: 5G/value: 15G/g' run_test.yml
 
 sed -i '/command:/i \
           - name: RUN_ID\
