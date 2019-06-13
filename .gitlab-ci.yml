@@ -91,6 +91,11 @@ busybox-sts-localpv:
   extends: .app_deploy_template
   script:
    - ./script/apps/busybox/deployer/busybox-deploy-localpv
+
+busybox-sts-localpv-device:
+  extends: .app_deploy_template
+  script:
+   - ./script/apps/busybox/deployer/busybox-deploy-localpv-device
      
 ## NUODB-CSTOR
 nuodb-cstor-run/load:
