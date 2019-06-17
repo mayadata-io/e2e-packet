@@ -12,9 +12,15 @@ export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/litmuschaos/litmus.git
 cd litmus/k8s/packet/k8s-installer
 echo "--------------- deleting packet cluster --------------------"
-ansible-playbook delete_packet_cluster.yml -vv
+ansible-playbook delete_packet_cluster.yml -vv --extra-vars "packet_api=$packet_api_token"
+if [ "$?" != "0" ]; then
+exit 1;
+fi
 echo "----------------deleting volumes ---------------------------"
 cd ../packet-storage
 cp -r $path/cluster/volume_id /tmp/packet/
 ansible-playbook delete-volume.yml -vv --extra-vars "packet_api=$packet_api_token"
+if [ "$?" != "0" ]; then
+exit 1;
+fi
 
