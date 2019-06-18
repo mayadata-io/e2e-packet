@@ -26,6 +26,7 @@ export OPENEBS_IO_CSTOR_POOL_IMAGE=$(eval python env_exporter.py -o cstorpool -f
 ##
 export OPENEBS_IO_CSTOR_TARGET_IMAGE=$(eval python env_exporter.py -o target -fp ../baseline/baseline)
 ##
+export INSTALL_DEFAULT_CSP=true
 
 cd $present_dir
 
