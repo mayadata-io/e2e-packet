@@ -338,6 +338,12 @@ tgt-disconnect-{mongo-cstor}:
     paths:
      - openebs-packet/
 
+## BUSYBOX-LOCALPV-DEVICE
+busybox-lovalpv-device-deprovision:
+  extends: .app_deprovision_template
+  script:
+   - ./script/apps/busybox/deprovision/busybox-deprovision-localpv-device
+
 ## PERCONA-JIVA
 percona-jiva-deprovision:
   extends: .app_deprovision_template
