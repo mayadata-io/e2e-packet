@@ -12,5 +12,5 @@ export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/litmuschaos/litmus.git
 cd litmus/k8s/packet/k8s-installer
 echo "--------------- deleting packet cluster --------------------"
-ansible-playbook delete_packet_cluster.yml -vv
+ansible-playbook delete_packet_cluster.yml -vv --extra-vars "packet_api=$PACKET_API_TOKEN"
 
