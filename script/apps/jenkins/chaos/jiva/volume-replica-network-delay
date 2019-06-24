@@ -32,7 +32,7 @@ cd litmus
   ----------------------------------------------------------------------------------
 EOF
 
-cp experiments/openebs_replica_network_delay/run_litmus_test.yml run_test.yml
+cp experiments/chaos/openebs_replica_network_delay/run_litmus_test.yml run_test.yml
 
 sed -i -e 's/''name=percona''/''app=jenkins-app''/g' \
 -e 's/value: app-percona-ns/value: app-jenkins-ns/g' \
