@@ -20,7 +20,7 @@ packet-cluster:
   image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP
   tags: 
-    - k8s-1-13 
+    - k8s-1-15 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -36,7 +36,7 @@ openebs-packet-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-13
+    - k8s-1-15
   dependencies:
     - packet-cluster
   script: 
@@ -49,7 +49,7 @@ openebs-sc-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-13
+    - k8s-1-15
   dependencies:
     - packet-cluster
   script:
@@ -65,7 +65,7 @@ openebs-sc-deploy:
   image: atulabhi/kops:v8
   stage: STATEFUL-APP-DEPLOY
   tags: 
-    - k8s-1-13 
+    - k8s-1-15 
   dependencies:
     - openebs-packet-deploy
   artifacts:
@@ -211,7 +211,7 @@ prometheus-cstor-run/load/check:
   image: atulabhi/kops:v8
   stage: APP-FUNC-TEST
   tags: 
-    - k8s-1-13
+    - k8s-1-15
   when: always 
   artifacts:
     paths: 
@@ -259,7 +259,6 @@ cstor-k8s-snapshot-clone-creation-{snapshot-clone-cStor}:
   script:
    - ./script/apps/percona/functional/cstor/k8s-snapshot-clone-cstor
 
-
 app-replica-scale-{cassandra-cstor}:
   extends: .func_test_template #dependencies: cassandra-cstor
   script:
@@ -276,7 +275,7 @@ app-upgrade-deployment-{jenkins-cstor}:
   image: atulabhi/kops:v8
   stage: APP-CHAOS-TEST
   tags: 
-    - k8s-1-13
+    - k8s-1-15
   when: always 
   artifacts:
     paths: 
@@ -332,7 +331,7 @@ tgt-disconnect-{mongo-cstor}:
   image: atulabhi/kops:v8
   stage: APP-DEPROVISION
   tags: 
-    - k8s-1-13
+    - k8s-1-15
   when: always
   artifacts:
     paths:
@@ -381,7 +380,7 @@ cleanup-packet:
     - packet-cluster
   stage: CLUSTER-CLEANUP
   tags: 
-    - k8s-1-13
+    - k8s-1-15
   script: 
     - chmod 755 ./script/packet-cleanup
     - ./script/packet-cleanup
