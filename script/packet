@@ -8,7 +8,7 @@ export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/litmuschaos/litmus.git
 cd litmus/k8s/packet/k8s-installer
 echo "--------------- creating packet cluster --------------------"
-ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.13.5-00" -v | tee create_packet_cluster
+ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.14.5-00" -v | tee create_packet_cluster
 cat create_packet_cluster | grep failed=0
 if [ "$?" != "0" ]; then
 rm create_packet_cluster
