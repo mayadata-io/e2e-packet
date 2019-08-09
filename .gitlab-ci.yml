@@ -5,6 +5,7 @@
 stages:
   - CLUSTER-SETUP
   - PROVIDER-INFRA-SETUP
+  - PROVISIONER-SETUP
   - STATEFUL-APP-DEPLOY
   - APP-FUNC-TEST
   - APP-CHAOS-TEST
@@ -36,7 +37,7 @@ openebs-packet-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-13
+    - k8s-1-14
   dependencies:
     - packet-cluster
   script: 
@@ -58,6 +59,21 @@ openebs-sc-deploy:
   artifacts:
     paths:
       - openebs-packet/
+
+openebs-csi-provisioner-deploy:
+  image: atulabhi/kops:v8
+  stage: PROVISIONER-SETUP
+  tags:
+    - k8s-1-14
+  dependencies:
+    - packet-cluster
+  script:
+   - chmod 775 ./script/provider/setup-csi
+   - ./script/provider/setup-csi
+  artifacts:
+    paths:
+      - openebs-packet/
+
 
 ## Define a job template for app deployers
 
