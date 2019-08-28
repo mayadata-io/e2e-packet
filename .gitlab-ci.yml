@@ -75,17 +75,17 @@ openebs-sc-deploy:
 ## Define the app deployer jobs
 
 ## PERCONA-JIVA
-percona-jiva-run/load/check 0:2:
+percona-jiva:
   extends: .app_deploy_template
   script: 
    - ./script/apps/percona/deployer/percona-app-deploy-jiva
 
-percona-jiva-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script: 
-   - sleep 180
-  script: 
-   - ./script/apps/percona/workload/jiva/percona-app-workload-jiva
+# percona-jiva-run/load/check 1:2:
+#   extends: .app_deploy_template
+#   before_script: 
+#    - sleep 180
+#   script: 
+#    - ./script/apps/percona/workload/jiva/percona-app-workload-jiva
 
 busybox-sts-localpv:
   extends: .app_deploy_template
@@ -98,45 +98,45 @@ busybox-sts-localpv-device:
    - ./script/apps/busybox/deployer/busybox-deploy-localpv-device
      
 ## NUODB-CSTOR
-nuodb-cstor-run/load:
+nuodb-cstor:
   extends: .app_deploy_template
   script:
    - ./script/apps/nuodb/deployer/nuodb-app-deploy-cstor
 
 ## PERCONA-JIVA-SINGLE-REPLICA
-percona-jiva-single-replica-run/load/check:
+percona-jiva-single-replica:
   extends: .app_deploy_template
   script:
    - ./script/apps/percona/deployer/percona-deploy-jiva-single-replica
 
 ## MONGO-JIVA
-mongo-jiva-run/load/check 0:2:
+mongo-jiva:
   extends: .app_deploy_template
   script: 
    - ./script/apps/mongo/deployer/mongo-app-deploy-jiva
 
-mongo-jiva-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script: 
-   - sleep 180
-  script: 
-   - ./script/apps/mongo/workload/jiva/mongo-app-workload-jiva
+# mongo-jiva-run/load/check 1:2:
+#   extends: .app_deploy_template
+#   before_script: 
+#    - sleep 180
+#   script: 
+#    - ./script/apps/mongo/workload/jiva/mongo-app-workload-jiva
 
 # POSTGRES-JIVA
-postgres-jiva-run/load/check 0:2:
+postgres-jiva:
   extends: .app_deploy_template
   script: 
    - ./script/apps/postgres/deployer/postgres-app-deploy-jiva
 
-postgres-jiva-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script: 
-   - sleep 180
-  script: 
-   - ./script/apps/postgres/workload/jiva/postgres-app-workload-jiva
+# postgres-jiva-run/load/check 1:2:
+#   extends: .app_deploy_template
+#   before_script: 
+#    - sleep 180
+#   script: 
+#    - ./script/apps/postgres/workload/jiva/postgres-app-workload-jiva
 
 # CASSANDRA-JIVA
-cassandra-jiva-run/load/check:
+cassandra-jiva:
   extends: .app_deploy_template
   script: 
    - ./script/apps/cassandra/deployer/cassandra-app-deploy-jiva
@@ -149,39 +149,39 @@ cassandra-jiva-run/load/check:
      #   - ./script/apps/cassandra/workload/jiva/cassandra-app-workload-jiva
 
 # JENKINS-JIVA
-jenkins-jiva-run/load/check:
+jenkins-jiva:
   extends: .app_deploy_template
   script: 
    - ./script/apps/jenkins/deployer/jenkins-app-deploy-jiva
 
 # PERCONA-CSTOR
-percona-cstor-run/load/check 0:2:
+percona-cstor:
   extends: .app_deploy_template
   script: 
    - ./script/apps/percona/deployer/percona-app-deploy-cstor
 
-percona-cstor-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script: 
-   - sleep 180
-  script: 
-   - ./script/apps/percona/workload/cstor/percona-app-workload-cstor
+# percona-cstor-run/load/check 1:2:
+#   extends: .app_deploy_template
+#   before_script: 
+#    - sleep 180
+#   script: 
+#    - ./script/apps/percona/workload/cstor/percona-app-workload-cstor
 
 # MONGO-CSTOR
-mongo-cstor-run/load/check 0:2:
+mongo-cstor:
   extends: .app_deploy_template
   script: 
    - ./script/apps/mongo/deployer/mongo-app-deploy-cstor
 
-mongo-cstor-run/load/check 1:2:
-  extends: .app_deploy_template
-  before_script: 
-   - sleep 180
-  script: 
-   - ./script/apps/mongo/workload/cstor/mongo-app-workload-cstor
+# mongo-cstor-run/load/check 1:2:
+#   extends: .app_deploy_template
+#   before_script: 
+#    - sleep 180
+#   script: 
+#    - ./script/apps/mongo/workload/cstor/mongo-app-workload-cstor
 
 # CASSANDRA_CSTOR
-cassandra-cstor-run/load/check:
+cassandra-cstor:
   extends: .app_deploy_template
   script:
    - ./script/apps/cassandra/deployer/cassandra-app-deploy-cstor
@@ -194,13 +194,13 @@ cassandra-cstor-run/load/check:
      #   - ./script/apps/cassandra/workload/cstor/cassandra-app-workload-cstor
 
 # JENKINS_CSTOR
-jenkins-cstor-run/load/check:
+jenkins-cstor:
   extends: .app_deploy_template
   script:
    - ./script/apps/jenkins/deployer/jenkins-app-deploy-cstor 
 
 # PROMETHEUS-CSTOR
-prometheus-cstor-run/load/check:
+prometheus-cstor:
   extends: .app_deploy_template
   script:
    - ./script/apps/prometheus/deployer/prometheus-app-deploy-cstor
@@ -313,10 +313,10 @@ app-kill-{jenkins-cstor}:
   script:
    - ./script/apps/jenkins/chaos/cstor/application-pod-failure
 
-app-kill-{mongo-jiva-xfs}:
-  extends: .chaos_test_template #dependencies: mongo-jiva
+app-kill-{cassandra-jiva}:
+  extends: .chaos_test_template #dependencies: cassandra-jiva
   script:
-   - ./script/apps/mongo/chaos/jiva/application-pod-failure
+   - ./script/apps/cassandra/chaos/jiva/application-pod-failure
 
 tgt-kill-{percona-cstor}:
   extends: .chaos_test_template #dependencies: percona-cstor
