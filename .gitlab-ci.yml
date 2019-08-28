@@ -305,6 +305,7 @@ app-kill-{jenkins-cstor}:
 app-kill-{cassandra-jiva}:
   extends: .chaos_test_template #dependencies: cassandra-jiva
   script:
+   - chmod 775 ./script/apps/cassandra/chaos/jiva/application-pod-failure
    - ./script/apps/cassandra/chaos/jiva/application-pod-failure
 
 tgt-kill-{percona-cstor}:
