@@ -41,6 +41,16 @@ sed -i '/command:/i \
             value: '"$run_id"'\
 ' run_test.yml
 
+## Replace the value of DATA_PERSISTENCE with application name in litmus experiment. 
+sed -i '/name: DATA_PERSISTENCE/{n;s/.*/            value: percona/}' run_test.yml
+
+## Insert the set of variables for percona data consistency util into configmap spec.
+sed -i '/parameters.yml: |/a \
+    dbuser: root\
+    dbpassword: k8sDem0\
+    dbname: tdb
+' run_test.yml
+
 #################
 ## RUNNER MAIN ##
 #################
