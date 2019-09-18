@@ -16,7 +16,7 @@ exit 1;
 fi
 echo "--------------Attaching disks to the nodes------------------"
 cd ../packet-storage
-ansible-playbook create-volume.yml -vv --extra-vars "packet_api=$packet_api_token disk_action=format" | tee disk_attach
+ansible-playbook create-volume.yml -vv --extra-vars "packet_api=$packet_api_token" | tee disk_attach
 cat disk_attach | grep failed=0
 if [ "$?" != "0" ]; then
 rm disk_attach
