@@ -95,8 +95,7 @@ openebs-cspc-provisioner:
   stage: STATEFUL-APP-DEPLOY
   tags: 
     - k8s-1-15 
-  dependencies:
-    - openebs-packet-deploy
+  when: always
   artifacts:
     paths: 
       - openebs-packet/

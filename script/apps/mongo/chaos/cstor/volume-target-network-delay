@@ -39,6 +39,7 @@ cp experiments/chaos/openebs_target_network_delay/run_litmus_test.yml run_test.y
 
 sed -i -e 's/name: openebs-target-network-delay/name: openebs-target-network-delay-cstor/g' \
 -e 's/value: app-percona-ns/value: mongocstor/g' \
+-e 's/name: target-network-delay/name: network-delay-test-jiva/g' \
 -e 's/value: percona-mysql-claim/value: openebs-mongo-mongo-0/g' \
 -e 's/''name=percona''/''app=mongo''/g' run_test.yml
 

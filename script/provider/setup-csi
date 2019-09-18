@@ -24,6 +24,9 @@ cd litmus
 
 cp providers/csi-provisioner/run_litmus_test.yml run_test.yml
 
+sed -i -e 's/value: ubuntu-16.04/value: ubuntu-18.04/g' run_test.yml
+
+cat run_test.yml
 #################
 ## RUNNER MAIN ##
 #################
