@@ -24,6 +24,11 @@ cd litmus
 
 cp providers/csi-provisioner/run_litmus_test.yml run_test.yml
 
+# Update storage class and storage pool in litmus experiment
+
+sed -i -e 's/openebs-csi-cstor-sparse/openebs-csi-cstor/g' \
+       	-e 's/cstor-sparse-pool/cstor-cspc-disk-pool/g' run_test.yml
+
 #################
 ## RUNNER MAIN ##
 #################
