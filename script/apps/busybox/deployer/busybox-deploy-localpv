@@ -13,7 +13,7 @@ run_id="localpv";test_name=$(${utils_path}/generate_test_name testcase=busybox-p
 ${utils_path}/setup_dependencies litmus-test
 
 ## Clone the litmus repo, navigate to litmus root 
-git clone https://github.com/litmuschaos/litmus.git
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 
 ############################

@@ -15,7 +15,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies infra-setup
 
 ## Clone the litmus repo,navigate to litmus root 
-git clone https://github.com/litmuschaos/litmus.git
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus 
 
 ############################
