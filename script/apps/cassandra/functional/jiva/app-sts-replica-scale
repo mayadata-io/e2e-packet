@@ -21,7 +21,7 @@ ${utils_path}/setup_dependencies litmus-test
 #git clone https://github.com/atulabhi/litmus.git
 #cd litmus; git checkout v0.7-RC1
 
-git clone https://github.com/litmuschaos/litmus.git
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 
 ############################
