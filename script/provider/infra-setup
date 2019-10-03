@@ -54,7 +54,7 @@ ansible-playbook efk.yml --extra-vars "commit_id=$CI_COMMIT_SHA pipeline_id=$CI_
 
 ## Clone the litmus repo, navigate to litmus root 
 
-git clone https://github.com/openebs/litmus.git
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 
 ${utils_path}/task_delimiter;
