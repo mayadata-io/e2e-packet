@@ -21,7 +21,7 @@ packet-cluster:
   image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP
   tags: 
-    - k8s-1-15 
+    - k8s-1-16 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -37,11 +37,12 @@ openebs-packet-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-15
+    - k8s-1-16
   dependencies:
     - packet-cluster
   script: 
-   - ./script/provider/infra-setup
+   - chmod 775 ./script/2-infra-setup/openebs-deploy/deploy-openebs
+   - ./script/2-infra-setup/openebs-deploy/deploy-openebs
   artifacts:
     paths:
       - openebs-packet/
@@ -50,51 +51,36 @@ openebs-sc-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-15
+    - k8s-1-16
   dependencies:
     - packet-cluster
   script:
-   - chmod 775 ./script/provider/setup-sc
-   - ./script/provider/setup-sc
+   - chmod 775 ./script/2-infra-setup/setup-sc/openebs-sc
+   - ./script/2-infra-setup/setup-sc/openebs-sc
   artifacts:
     paths:
       - openebs-packet/
 
-openebs-csi-provisioner-deploy:
+Create-striped-pool:
   image: atulabhi/kops:v8
-  stage: PROVISIONER-SETUP
-  tags:
-    - k8s-1-15
+  stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-16
   dependencies:
     - packet-cluster
   script:
-   - chmod 775 ./script/provider/setup-csi
-   - ./script/provider/setup-csi
+   - chmod 775 ./script/2-infra-setup/create-striped-pool/create-striped-pool
+   - ./script/2-infra-setup/create-striped-pool/create-striped-pool
   artifacts:
     paths:
       - openebs-packet/
-
-openebs-cspc-provisioner:
-  image: atulabhi/kops:v8
-  stage: PROVISIONER-SETUP
-  tags:
-    - k8s-1-15
-  dependencies:
-    - packet-cluster
-  script:
-   - chmod 775 ./script/provider/cspc-provision
-   - ./script/provider/cspc-provision
-  artifacts:
-    paths:
-      - openebs-packet/
-
 ## Define a job template for app deployers
 
 .app_deploy_template:
   image: atulabhi/kops:v8
   stage: STATEFUL-APP-DEPLOY
   tags: 
-    - k8s-1-15 
+    - k8s-1-16 
   when: always
   artifacts:
     paths: 
@@ -239,7 +225,7 @@ prometheus-cstor:
   image: atulabhi/kops:v8
   stage: APP-FUNC-TEST
   tags: 
-    - k8s-1-15
+    - k8s-1-16
   when: always 
   artifacts:
     paths: 
@@ -303,7 +289,7 @@ app-upgrade-deployment-{jenkins-cstor}:
   image: atulabhi/kops:v8
   stage: APP-CHAOS-TEST
   tags: 
-    - k8s-1-15
+    - k8s-1-16
   when: always 
   artifacts:
     paths: 
@@ -359,7 +345,7 @@ tgt-disconnect-{mongo-cstor}:
   image: atulabhi/kops:v8
   stage: APP-DEPROVISION
   tags: 
-    - k8s-1-15
+    - k8s-1-16
   when: always
   artifacts:
     paths:
@@ -408,7 +394,7 @@ cleanup-packet:
     - packet-cluster
   stage: CLUSTER-CLEANUP
   tags: 
-    - k8s-1-15
+    - k8s-1-16
   script: 
     - chmod 755 ./script/packet-cleanup
     - ./script/packet-cleanup
