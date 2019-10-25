@@ -1,18 +1,13 @@
 #!/bin/bash
 set -x
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'git clone -b k8s-1-16 https://github.com/mayadata-io/e2e-packet.git'
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/2-infra-setup/openebs-deploy/deploy-openebs node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"' '"'$NDM_TAG'"' '"'$RELEASE_BRANCH'"' '"'$E_USER'"' '"'$E_PASSWORD'"'
-}
 
-node() {
-job_id=$(echo $1)
-pipeline_id=$(echo $2)
-commit_id=$(echo $3)
-releaseBranch=$(echo $5)
-ndmTag=$(echo $4)
-elastic_user=$(echo $6)
-elastic_password=$(echo $7)
+job_id='"'$CI_JOB_ID'"'
+pipeline_id='"'$CI_PIPELINE_ID'"'
+commit_id='"'$CI_COMMIT_SHA'"'
+releaseBranch='"'$RELEASE_BRANCH'"'
+ndmTag='"'$NDM_TAG'"'
+elastic_user='"'$E_USER'"'
+elastic_password='"'$E_PASSWORD'"'
 
 time="date"
 current_time=$(eval $time)
@@ -30,6 +25,9 @@ ansible-playbook efk.yml --extra-vars "commit_id=$commit_id pipeline_id=$pipelin
 # Applying e2e-CRD
 echo "***Applying e2e-crd***********"
 kubectl apply -f script/utils/e2e-crd.yml
+
+echo "Setting up test dependencies.."
+${utils_path}/setup_dependencies infra-setup
 
 echo "*****Deploying openebs*******"
 bash script/utils/e2e-cr jobname:s2-j1-openebs-deploy jobphase:Waiting
@@ -121,12 +119,4 @@ bash script/utils/e2e-cr jobname:s2-j1-openebs-deploy jobphase:Completed end_tim
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4 $5 $6
-else
-  pod
 fi

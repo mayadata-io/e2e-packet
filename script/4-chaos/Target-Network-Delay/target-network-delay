@@ -1,23 +1,18 @@
 #!/bin/bash
 set -x
 
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/4-chaos/Target-Network-Delay/target-network-delay node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
-source ~/.profile
-gittoken=$(echo "$github_token")
-
-job_id=$(echo $1)
-pipeline_id=$(echo $2)
-commit_id=$(echo $3)
+job_id='"'$CI_JOB_ID'"'
+pipeline_id='"'$CI_PIPELINE_ID'"'
+commit_id='"'$CI_COMMIT_SHA'"'
 
 time="date"
 current_time=$(eval $time)
 
 present_dir=$(pwd)
 echo $present_dir
+
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test	
 
 bash script/utils/e2e-cr jobname:target-network-delay jobphase:Waiting
 bash script/utils/e2e-cr jobname:target-network-delay jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
@@ -50,7 +45,6 @@ bash script/utils/dump_cluster_state;
 bash script/utils/event_updater jobname:target-network-delay $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
 
 if [ "$?" != "0" ]; then
-# python3 script/utils/result/result_update.py $job_id GFL0 4-chaos "Induce delay in cstor target pod network and verify if the application is not impacted" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
 
@@ -97,7 +91,6 @@ bash script/utils/dump_cluster_state;
 bash script/utils/event_updater jobname:target-network-delay $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
 
 if [ "$?" != "0" ]; then
-# python3 script/utils/result/result_update.py $job_id GFL0 4-chaos "Induce delay in cstor target pod network and verify if the application is not impacted" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
 
@@ -126,7 +119,6 @@ bash script/utils/dump_cluster_state;
 bash script/utils/event_updater jobname:target-network-delay $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
 
 if [ "$?" != "0" ]; then
-# python3 script/utils/result/result_update.py $job_id GFL0 4-chaos "Induce delay in cstor target pod network and verify if the application is not impacted" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
 
@@ -177,7 +169,6 @@ rc_val=$(echo $?)
 
 # Update result of the test case in github mayadata-io/e2e-packet repository.
 if [ "$rc_val" != "0" ]; then
-# python3 script/utils/result/result_update.py $job_id GFL0 4-chaos "Induce delay in cstor target pod network and verify if the application is not impacted" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
 
@@ -215,22 +206,12 @@ rc_val=$(echo $?)
 # testResult=$(kubectl get litmusresult ${test_name} --no-headers -o custom-columns=:spec.testStatus.result)
 
 if [ "$rc_val" != "0" ]; then
-# python3 script/utils/result/result_update.py $job_id GFL0 4-chaos "Induce delay in cstor target pod network and verify if the application is not impacted" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
 
 current_time=$(eval $time)
 bash script/utils/e2e-cr jobname:target-network-delay jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
-# python3 script/utils/result/result_update.py $job_id GFL0 4-chaos "Induce delay in cstor target pod network and verify if the application is not impacted" Pass $pipeline_id "$current_time" $commit_id $gittoken
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi
