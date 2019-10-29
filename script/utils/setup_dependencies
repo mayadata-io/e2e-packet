@@ -23,4 +23,3 @@ elif [[ $1 == "litmus-test" ]]; then
  setup_cluster_config_test;
 else echo "invalid job type"; exit 1
 fi 
-
