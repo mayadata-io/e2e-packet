@@ -1,13 +1,13 @@
 #!/bin/bash
 set -x
 
-job_id='"'$CI_JOB_ID'"'
-pipeline_id='"'$CI_PIPELINE_ID'"'
-commit_id='"'$CI_COMMIT_SHA'"'
-releaseBranch='"'$RELEASE_BRANCH'"'
-ndmTag='"'$NDM_TAG'"'
-elastic_user='"'$E_USER'"'
-elastic_password='"'$E_PASSWORD'"'
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
+commit_id=$CI_COMMIT_SHA
+releaseBranch=$RELEASE_BRANCH
+ndmTag=$NDM_TAG
+elastic_user=$E_USER
+elastic_password=$E_PASSWORD
 
 time="date"
 current_time=$(eval $time)
