@@ -21,7 +21,7 @@ packet-cluster:
   image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP
   tags: 
-    - k8s-1-16 
+    - k8s-1-13 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -37,7 +37,7 @@ openebs-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-16
+    - k8s-1-13
   dependencies:
     - packet-cluster
   script: 
@@ -341,7 +341,7 @@ cleanup-packet:
     - packet-cluster
   stage: CLUSTER-CLEANUP
   tags: 
-    - k8s-1-16
+    - k8s-1-13
   script: 
     - chmod 755 ./script/5-cleanup/packet-cleanup
     - ./script/5-cleanup/packet-cleanup
