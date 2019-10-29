@@ -15,6 +15,9 @@ current_time=$(eval $time)
 present_dir=$(pwd)
 echo $present_dir
 
+echo "Setting up test dependencies.."
+${utils_path}/setup_dependencies infra-setup
+
 for i in efk-vars.yml efk.yml get_url.yml; do
   wget https://raw.githubusercontent.com/openebs/e2e-infrastructure/master/workload/efk-client/playbook/$i
 done
@@ -26,9 +29,6 @@ ansible-playbook efk.yml --extra-vars "commit_id=$commit_id pipeline_id=$pipelin
 echo "***Applying e2e-crd***********"
 kubectl apply -f script/utils/e2e-crd.yml
 
-echo "Setting up test dependencies.."
-${utils_path}/setup_dependencies infra-setup
-
 echo "*****Deploying openebs*******"
 bash script/utils/e2e-cr jobname:s2-j1-openebs-deploy jobphase:Waiting
 bash script/utils/e2e-cr jobname:s2-j1-openebs-deploy jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
@@ -37,7 +37,7 @@ bash script/utils/e2e-cr jobname:s2-j2-cstor-striped-pool jobphase:Waiting
 
 source ~/.profile
 
-git clone -b $INFRA_BRANCH https://github.com/openebs/e2e-infrastructure.git
+git clone https://github.com/openebs/e2e-infrastructure.git
 cd e2e-infrastructure/env
 
 ######################################################
@@ -87,13 +87,13 @@ cat providers/openebs/installers/operator/master/litmusbook/run_litmus_test.yaml
 ## RUNNER MAIN ##
 #################
 
-echo "Applying rbac.yml********************************"
-kubectl apply -f ./hack/rbac.yaml
-kubectl apply -f ./hack/crds.yaml
+# echo "Applying rbac.yml********************************"
+# kubectl apply -f ./hack/rbac.yaml
+# kubectl apply -f ./hack/crds.yaml
 
-echo "Copying kube config for litmus"
-cp ~/.kube/config admin.conf
-kubectl create cm kubeconfig --from-file=admin.conf -n litmus
+# echo "Copying kube config for litmus"
+# cp ~/.kube/config admin.conf
+# kubectl create cm kubeconfig --from-file=admin.conf -n litmus
 
 echo "Running litmus test for openebs deploy.."
 
