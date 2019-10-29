@@ -61,19 +61,19 @@ openebs-deploy:
 #     paths:
 #       - openebs-packet/
 
-# Create-striped-pool:
-#   image: atulabhi/kops:v8
-#   stage: PROVIDER-INFRA-SETUP
-#   tags: 
-#     - k8s-1-16
-#   dependencies:
-#     - packet-cluster
-#   script:
-#    - chmod 775 ./script/2-infra-setup/create-striped-pool/create-striped-pool
-#    - ./script/2-infra-setup/create-striped-pool/create-striped-pool
-#   artifacts:
-#     paths:
-#       - openebs-packet/
+Create-striped-pool:
+  image: atulabhi/kops:v8
+  stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-16
+  dependencies:
+    - packet-cluster
+  script:
+   - chmod 775 ./script/2-infra-setup/create-striped-pool/create-striped-pool
+   - ./script/2-infra-setup/create-striped-pool/create-striped-pool
+  artifacts:
+    paths:
+      - openebs-packet/
 
 # ######################## Functional stage ############################
 
