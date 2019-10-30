@@ -1,18 +1,16 @@
 #!/bin/bash
 set -x
 
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/3-functional/App-deploy-RWX/app-deploy-rwx node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
-job_id=$(echo $1)
-pipeline_id=$(echo $2)
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
 time="date"
 source ~/.profile
 gittoken=$(echo "$github_token")
-commit_id=$(echo $3)
+commit_id=$CI_COMMIT_SHA
 current_time=$(eval $time)
+
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test	
 
 bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Waiting
 bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
@@ -53,18 +51,10 @@ testResult=$(kubectl get litmusresult ${test_name} --no-headers -o custom-column
 
 ## Check the test status & result from the litmus result custom resource
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
+bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:$testResult
 
 # python3 script/utils/result/result_update.py $job_id WOEM 3-functional "Deploy the application using nfs-provisioner accessmode as a readwritemany" $testResult $pipeline_id "$current_time" $commit_id $gittoken
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi

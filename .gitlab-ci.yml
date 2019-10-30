@@ -7,7 +7,7 @@ stages:
   - PROVIDER-INFRA-SETUP
   # - PROVISIONER-SETUP  
   # - STATEFUL-APP-DEPLOY
-  # - FUNCTIONAL
+  - FUNCTIONAL
   - CHAOS
   # - APP-DEPROVISION
   - CLUSTER-CLEANUP
@@ -21,7 +21,7 @@ packet-cluster:
   image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP
   tags: 
-    - k8s-1-13 
+    - k8s-1-16 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -37,7 +37,7 @@ openebs-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-13
+    - k8s-1-16
   dependencies:
     - packet-cluster
   script: 
@@ -47,19 +47,19 @@ openebs-deploy:
     paths:
       - openebs-packet/
 
-# openebs-sc-deploy:
-#   image: atulabhi/kops:v8
-#   stage: PROVIDER-INFRA-SETUP
-#   tags: 
-#     - k8s-1-16
-#   dependencies:
-#     - packet-cluster
-#   script:
-#    - chmod 775 ./script/2-infra-setup/setup-sc/openebs-sc
-#    - ./script/2-infra-setup/setup-sc/openebs-sc
-#   artifacts:
-#     paths:
-#       - openebs-packet/
+openebs-sc-deploy:
+  image: atulabhi/kops:v8
+  stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-16
+  dependencies:
+    - packet-cluster
+  script:
+   - chmod 775 ./script/2-infra-setup/setup-sc/openebs-sc
+   - ./script/2-infra-setup/setup-sc/openebs-sc
+  artifacts:
+    paths:
+      - openebs-packet/
 
 Create-striped-pool:
   image: atulabhi/kops:v8
@@ -77,144 +77,144 @@ Create-striped-pool:
 
 # ######################## Functional stage ############################
 
-# .func_test_template:
-#   image: atulabhi/kops:v8
-#   stage: FUNCTIONAL
-#   when: always
-#   dependencies:
-#     - openebs-deploy
+.func_test_template:
+  image: atulabhi/kops:v8
+  stage: FUNCTIONAL
+  when: always
+  dependencies:
+    - openebs-deploy
      
-# cStor-Create-Snapshot:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Snapshot/snapshot
-#     - ./script/3-functional/Snapshot/snapshot
+cStor-Create-Snapshot:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Snapshot/snapshot
+    - ./script/3-functional/Snapshot/snapshot
 
-# cStor-Create-Clone:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Snapshot-Clone/snapshot-clone
-#     - ./script/3-functional/Snapshot-Clone/snapshot-clone
+cStor-Create-Clone:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Snapshot-Clone/snapshot-clone
+    - ./script/3-functional/Snapshot-Clone/snapshot-clone
 
-# cStor-Clone-different-capacity:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Clone-different-capacity/clone-different-capacity
-#     - ./script/3-functional/Clone-different-capacity/clone-different-capacity
+cStor-Clone-different-capacity:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Clone-different-capacity/clone-different-capacity
+    - ./script/3-functional/Clone-different-capacity/clone-different-capacity
 
-# Jiva-Delete-Autogen-Snapshot:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
-#     - ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
+Jiva-Delete-Autogen-Snapshot:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
+    - ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
 
-# cStor-Parent-Volume-Delete:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Clone-parent-vol-delete/clone-parent-vol-delete
-#     - ./script/3-functional/Clone-parent-vol-delete/clone-parent-vol-delete
+cStor-Parent-Volume-Delete:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Clone-parent-vol-delete/clone-parent-vol-delete
+    - ./script/3-functional/Clone-parent-vol-delete/clone-parent-vol-delete
 
-# cStor-STS-App-Target-Affinity:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/STS-App-Target-Affinity/sts-app-target-affinity
-#     - ./script/3-functional/STS-App-Target-Affinity/sts-app-target-affinity
+cStor-STS-App-Target-Affinity:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/STS-App-Target-Affinity/sts-app-target-affinity
+    - ./script/3-functional/STS-App-Target-Affinity/sts-app-target-affinity
 
-# cStor-App-Target-Affinity:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/App-Target-affinity/app-target-affinity
-#     - ./script/3-functional/App-Target-affinity/app-target-affinity
+cStor-App-Target-Affinity:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/App-Target-affinity/app-target-affinity
+    - ./script/3-functional/App-Target-affinity/app-target-affinity
 
-# cStor-CAS-Performance:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/CAS-performance/cas-performance
-#     - ./script/3-functional/CAS-performance/cas-performance
+cStor-CAS-Performance:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/CAS-performance/cas-performance
+    - ./script/3-functional/CAS-performance/cas-performance
 
-# cStor-App-Scaleup:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Sts-App-replica-scaleup/app-replica-scaleup
-#     - ./script/3-functional/Sts-App-replica-scaleup/app-replica-scaleup
+cStor-App-Scaleup:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Sts-App-replica-scaleup/app-replica-scaleup
+    - ./script/3-functional/Sts-App-replica-scaleup/app-replica-scaleup
 
-# Jiva-Volume-Scaleup:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Jiva-Volume-scaleup/jiva-volume-scaleup
-#     - ./script/3-functional/Jiva-Volume-scaleup/jiva-volume-scaleup
+Jiva-Volume-Scaleup:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Jiva-Volume-scaleup/jiva-volume-scaleup
+    - ./script/3-functional/Jiva-Volume-scaleup/jiva-volume-scaleup
 
-# cStor-Volume-Capacity-Fill:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
-#     - ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
+cStor-Volume-Capacity-Fill:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
+    - ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
       
-# cStor-STS-Volume-Distribute:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/STS-Volume-Distribution/volume-distribution
-#     - ./script/3-functional/STS-Volume-Distribution/volume-distribution
+cStor-STS-Volume-Distribute:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/STS-Volume-Distribution/volume-distribution
+    - ./script/3-functional/STS-Volume-Distribution/volume-distribution
 
-# cStor-Data-integrity:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Data-Integrity/data-integrity
-#     - ./script/3-functional/Data-Integrity/data-integrity
+cStor-Data-integrity:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Data-Integrity/data-integrity
+    - ./script/3-functional/Data-Integrity/data-integrity
 
-# cStor-Memory-Usage:
-#   extends: .func_test_template
-#   script: 
-#     - chmod 775 ./script/3-functional/Memory-Consumption/memory-consumption
-#     - ./script/3-functional/Memory-Consumption/memory-consumption
+cStor-Memory-Usage:
+  extends: .func_test_template
+  script: 
+    - chmod 775 ./script/3-functional/Memory-Consumption/memory-consumption
+    - ./script/3-functional/Memory-Consumption/memory-consumption
 
-# Jiva-Data-Integrity:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-Data-Integrity/jiva-data-integrity
-#     - ./script/3-functional/Jiva-Data-Integrity/jiva-data-integrity
+Jiva-Data-Integrity:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-Data-Integrity/jiva-data-integrity
+    - ./script/3-functional/Jiva-Data-Integrity/jiva-data-integrity
 
-# Jiva-App-Scaleup:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-sts-App-replica-scaleup/app-replica-scaleup
-#     - ./script/3-functional/Jiva-sts-App-replica-scaleup/app-replica-scaleup
+Jiva-App-Scaleup:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-sts-App-replica-scaleup/app-replica-scaleup
+    - ./script/3-functional/Jiva-sts-App-replica-scaleup/app-replica-scaleup
 
-# Jiva-App-Target-affinity:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-App-Target-Affinity/app-target-affinity
-#     - ./script/3-functional/Jiva-App-Target-Affinity/app-target-affinity
+Jiva-App-Target-affinity:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-App-Target-Affinity/app-target-affinity
+    - ./script/3-functional/Jiva-App-Target-Affinity/app-target-affinity
 
-# Jiva-Memory-Consumption:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-Memory-Consumption/jiva-memory-consumption
-#     - ./script/3-functional/Jiva-Memory-Consumption/jiva-memory-consumption
+Jiva-Memory-Consumption:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-Memory-Consumption/jiva-memory-consumption
+    - ./script/3-functional/Jiva-Memory-Consumption/jiva-memory-consumption
 
-# Jiva-snapshot:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-snapshot/jiva-snapshot
-#     - ./script/3-functional/Jiva-snapshot/jiva-snapshot
+Jiva-snapshot:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-snapshot/jiva-snapshot
+    - ./script/3-functional/Jiva-snapshot/jiva-snapshot
 
-# Jiva-snapshot-clone:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-snapshot-clone/jiva-snapshot-clone
-#     - ./script/3-functional/Jiva-snapshot-clone/jiva-snapshot-clone
+Jiva-snapshot-clone:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-snapshot-clone/jiva-snapshot-clone
+    - ./script/3-functional/Jiva-snapshot-clone/jiva-snapshot-clone
 
-# Jiva-pods-openebs-namespace:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/Jiva-pods-openebs-namespace/jiva-pods-openebs-ns
-#     - ./script/3-functional/Jiva-pods-openebs-namespace/jiva-pods-openebs-ns
+Jiva-pods-openebs-namespace:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/Jiva-pods-openebs-namespace/jiva-pods-openebs-ns
+    - ./script/3-functional/Jiva-pods-openebs-namespace/jiva-pods-openebs-ns
 
-# RWX-APP-DEPLOY:
-#   extends: .func_test_template
-#   script:
-#     - chmod 775 ./script/3-functional/App-deploy-RWX/app-deploy-rwx
-#     - ./script/3-functional/App-deploy-RWX/app-deploy-rwx
+RWX-APP-DEPLOY:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/App-deploy-RWX/app-deploy-rwx
+    - ./script/3-functional/App-deploy-RWX/app-deploy-rwx
 
 ###################  chaos stage ########################
 
@@ -225,35 +225,35 @@ Create-striped-pool:
   dependencies:
     - openebs-deploy
 
-# App-Kill:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/App-Kill/app-kill
-#     - ./script/4-chaos/App-Kill/app-kill
+App-Kill:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/App-Kill/app-kill
+    - ./script/4-chaos/App-Kill/app-kill
 
-# cStor-istgt-Kill:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Cstor-volume-istgt-kill/cstor-volume-istgt-kill
-#     - ./script/4-chaos/Cstor-volume-istgt-kill/cstor-volume-istgt-kill
+cStor-istgt-Kill:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Cstor-volume-istgt-kill/cstor-volume-istgt-kill
+    - ./script/4-chaos/Cstor-volume-istgt-kill/cstor-volume-istgt-kill
 
-# cStor-Pool-Kill:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Cstor-pool-kill/cstor-pool-kill
-#     - ./script/4-chaos/Cstor-pool-kill/cstor-pool-kill
+cStor-Pool-Kill:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Cstor-pool-kill/cstor-pool-kill
+    - ./script/4-chaos/Cstor-pool-kill/cstor-pool-kill
 
-# cStor-Pool-Delete:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Cstor-pool-delete/cstor-pool-delete
-#     - ./script/4-chaos/Cstor-pool-delete/cstor-pool-delete
+cStor-Pool-Delete:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Cstor-pool-delete/cstor-pool-delete
+    - ./script/4-chaos/Cstor-pool-delete/cstor-pool-delete
 
-# cStor-target-kill:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Target-Kill/target-kill
-#     - ./script/4-chaos/Target-Kill/target-kill
+cStor-target-kill:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Target-Kill/target-kill
+    - ./script/4-chaos/Target-Kill/target-kill
 
 Target-Network-Delay:
   extends: .chaos_test_template
@@ -261,77 +261,77 @@ Target-Network-Delay:
     - chmod 775 ./script/4-chaos/Target-Network-Delay/target-network-delay
     - ./script/4-chaos/Target-Network-Delay/target-network-delay
 
-# Target-Network-Loss:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Target-Network-Loss/target-network-loss
-#     - ./script/4-chaos/Target-Network-Loss/target-network-loss
+Target-Network-Loss:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Target-Network-Loss/target-network-loss
+    - ./script/4-chaos/Target-Network-Loss/target-network-loss
 
-# Snap-Rebuild-single-replica:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Snap-Rebuild-Single-Rep/snap-rebuild-single-rep
-#     - ./script/4-chaos/Snap-Rebuild-Single-Rep/snap-rebuild-single-rep
+Snap-Rebuild-single-replica:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Snap-Rebuild-Single-Rep/snap-rebuild-single-rep
+    - ./script/4-chaos/Snap-Rebuild-Single-Rep/snap-rebuild-single-rep
 
-# Snap-Rebuild-multiple-replica:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Snap-Rebuild-Multiple-Replica/snap-rebuild-multiple-replica
-#     - ./script/4-chaos/Snap-Rebuild-Multiple-Replica/snap-rebuild-multiple-replica
+Snap-Rebuild-multiple-replica:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Snap-Rebuild-Multiple-Replica/snap-rebuild-multiple-replica
+    - ./script/4-chaos/Snap-Rebuild-Multiple-Replica/snap-rebuild-multiple-replica
 
-# Clone-Rebuild-post-snapshot-rebuild:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Clone-Post-Snap-Rebuild/clone-post-rebuild
-#     - ./script/4-chaos/Clone-Post-Snap-Rebuild/clone-post-rebuild
+Clone-Rebuild-post-snapshot-rebuild:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Clone-Post-Snap-Rebuild/clone-post-rebuild
+    - ./script/4-chaos/Clone-Post-Snap-Rebuild/clone-post-rebuild
 
-# volume-mgmt-kill:
-#   extends: .chaos_test_template
-#   script: 
-#     - chmod 775 ./script/4-chaos/Cstor-volume-mgmt-kill/cstor-volume-mgmt-kill
-#     - ./script/4-chaos/Cstor-volume-mgmt-kill/cstor-volume-mgmt-kill
+volume-mgmt-kill:
+  extends: .chaos_test_template
+  script: 
+    - chmod 775 ./script/4-chaos/Cstor-volume-mgmt-kill/cstor-volume-mgmt-kill
+    - ./script/4-chaos/Cstor-volume-mgmt-kill/cstor-volume-mgmt-kill
 
-# nfs-cstor-app-kill:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Nfs-App-Kill/nfs-app-kill
-#     - ./script/4-chaos/Nfs-App-Kill/nfs-app-kill    
+nfs-cstor-app-kill:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Nfs-App-Kill/nfs-app-kill
+    - ./script/4-chaos/Nfs-App-Kill/nfs-app-kill    
 
-# Jiva-App-Kill:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Jiva-app-kill/jiva-app-kill
-#     - ./script/4-chaos/Jiva-app-kill/jiva-app-kill
+Jiva-App-Kill:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Jiva-app-kill/jiva-app-kill
+    - ./script/4-chaos/Jiva-app-kill/jiva-app-kill
 
-# Jiva-single-replica-failure:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Jiva-single-replica-failure/single-replica-failure
-#     - ./script/4-chaos/Jiva-single-replica-failure/single-replica-failure
+Jiva-single-replica-failure:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Jiva-single-replica-failure/single-replica-failure
+    - ./script/4-chaos/Jiva-single-replica-failure/single-replica-failure
 
-# Jiva-controller-kill:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Jiva-controller-kill/controller-kill
-#     - ./script/4-chaos/Jiva-controller-kill/controller-kill
+Jiva-controller-kill:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Jiva-controller-kill/controller-kill
+    - ./script/4-chaos/Jiva-controller-kill/controller-kill
 
-# Jiva-controller-network-delay:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
-#     - ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
+Jiva-controller-network-delay:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
+    - ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
 
-# Jiva-replica-failure:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Jiva-replica-failure/jiva-replica-failure
-#     - ./script/4-chaos/Jiva-replica-failure/jiva-replica-failure
+Jiva-replica-failure:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Jiva-replica-failure/jiva-replica-failure
+    - ./script/4-chaos/Jiva-replica-failure/jiva-replica-failure
 
-# Jiva-replica-node-affinity:
-#   extends: .chaos_test_template
-#   script:
-#     - chmod 775 ./script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity
-#     - ./script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity
+Jiva-replica-node-affinity:
+  extends: .chaos_test_template
+  script:
+    - chmod 775 ./script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity
+    - ./script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity
 
       ############# cleanup stage ##############
 cleanup-packet:
@@ -341,7 +341,7 @@ cleanup-packet:
     - packet-cluster
   stage: CLUSTER-CLEANUP
   tags: 
-    - k8s-1-13
+    - k8s-1-16
   script: 
     - chmod 755 ./script/5-cleanup/packet-cleanup
     - ./script/5-cleanup/packet-cleanup

@@ -1,24 +1,24 @@
 #!/bin/bash
 set -x
 
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
 source ~/.profile
 #github token to push the test result into github mayadata-io/e2e-packet repository.
 #This token is set as an env in ~/.profile in the test cluster.
 gittoken=$(echo "$github_token")
-job_id=$(echo $1) #Gitlab job id obtain from the gitlab env ($CI_JOB_ID).
-pipeline_id=$(echo $2) # Gitlab pipeline id obtained from gitlab env ($CI_PIPELINE_ID).
-commit_id=$(echo $3) #Gitlab commit id Obtained fron gilab env ($CI_COMMIT_SHA).
+
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
+commit_id=$CI_COMMIT_SHA
 
 time="date"
 current_time=$(eval $time)
 
 present_dir=$(pwd)
 echo $present_dir
+
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test
+
 #Creating e2e custom resource result for the test.
 bash script/utils/e2e-cr jobname:jiva-replica-node-affinity jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
 bash script/utils/e2e-cr jobname:jiva-replica-node-affinity jobphase:Running
@@ -279,12 +279,4 @@ bash script/utils/e2e-cr jobname:jiva-replica-node-affinity jobphase:Completed e
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi

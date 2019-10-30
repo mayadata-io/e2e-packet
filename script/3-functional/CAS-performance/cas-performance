@@ -1,14 +1,9 @@
 #!/bin/bash
 set -x
 
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/3-functional/CAS-performance/cas-performance node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
-job_id=$1 #Gitlab job id obtain from the gitlab env ($CI_JOB_ID).
-pipeline_id=$2 # Gitlab pipeline id obtained from gitlab env ($CI_PIPELINE_ID).
-commit_id=$3 #Gitlab commit id Obtained fron gilab env ($CI_COMMIT_SHA).
+job_id=$CI_JOB_ID #Gitlab job id obtain from the gitlab env ($CI_JOB_ID).
+pipeline_id=$CI_PIPELINE_ID # Gitlab pipeline id obtained from gitlab env ($CI_PIPELINE_ID).
+commit_id=$CI_COMMIT_SHA #Gitlab commit id Obtained fron gilab env ($CI_COMMIT_SHA).
 gitlab_stage=3-functional # Gitlab stage where this test case is running.
 
 source ~/.profile
@@ -22,8 +17,10 @@ current_time=$(eval $time)
 present_dir=$(pwd)
 echo $present_dir
 
-#Creating e2e custom resource result for the test.
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test
 
+#Creating e2e custom resource result for the test.
 bash script/utils/e2e-cr jobname:cas-performance jobphase:Waiting
 bash script/utils/e2e-cr jobname:cas-performance jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" 
 
@@ -262,12 +259,4 @@ bash script/utils/e2e-cr jobname:cas-performance jobphase:Completed end_time:"$c
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi

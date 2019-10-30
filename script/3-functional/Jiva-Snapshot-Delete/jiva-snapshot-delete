@@ -1,15 +1,9 @@
 #!/bin/bash
 set -x
 
-pod() {
-# sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'git clone -b k8s-1-16 https://github.com/mayadata-io/e2e-packet.git'
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
-job_id=$(echo $1)
-pipeline_id=$(echo $2)
-commit_id=$(echo $3)
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
+commit_id=$CI_COMMIT_SHA
 
 source ~/.profile
 gittoken=$(echo "$github_token")
@@ -19,6 +13,9 @@ current_time=$(eval $time)
 
 present_dir=$(pwd)
 echo $present_dir
+
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/e2e-cr jobname:jiva-internal-snapshot-deletion jobphase:Waiting
 bash script/utils/e2e-cr jobname:jiva-internal-snapshot-deletion jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" 
@@ -57,12 +54,4 @@ bash script/utils/event_updater jobname:jiva-internal-snapshot-deletion $test_na
 if [ "$?" != "0" ]; then
 # python3 script/utils/result/result_update.py $job_id 8QQP 3-functional "Verify if the snapshot is getting Deleted Automatically" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi

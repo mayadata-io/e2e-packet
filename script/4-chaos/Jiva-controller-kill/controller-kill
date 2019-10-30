@@ -1,20 +1,14 @@
 #!/bin/bash
 set -x
 
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port ssh root@10.23.1.10 'oc adm policy add-scc-to-user anyuid system:serviceaccount:ctrl-kill:default'
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/stages/4-chaos/Jiva-controller-kill/controller-kill node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
 source ~/.profile
 #github token to push the test result into github openebs/e2e-packet repository. 
 #This token is set as an env in ~/.profile in the test cluster.
 gittoken=$(echo "$github_token")
 
-job_id=$(echo $1) #Gitlab job id obtain from the gitlab env ($CI_JOB_ID).
-pipeline_id=$(echo $2) # Gitlab pipeline id obtained from gitlab env ($CI_PIPELINE_ID).
-commit_id=$(echo $3) #Gitlab commit id Obtained fron gilab env ($CI_COMMIT_SHA).
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
+commit_id=$CI_COMMIT_SHA
 gitlab_stage=4-chaos # Gitlab stage where this test case is running.
 #job_description="'Induce failure on JIVA controller pod and check if it gets scheduled immediately and the application is available'"
 
@@ -24,8 +18,10 @@ current_time=$(eval $time)
 present_dir=$(pwd)
 echo $present_dir
 
-#Creating e2e custom resoure result fot the each stage of the test.
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test
 
+#Creating e2e custom resoure result fot the each stage of the test.
 bash script/utils/e2e-cr jobname:controller-kill jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
 bash script/utils/e2e-cr jobname:controller-kill jobphase:Running init_time:"$current_time"
 
@@ -302,11 +298,4 @@ bash script/utils/e2e-cr jobname:controller-kill jobphase:Completed end_time:"$c
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi
