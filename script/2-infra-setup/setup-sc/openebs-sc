@@ -1,21 +1,19 @@
 #!/bin/bash
 set -x
-pod() {
-sshpass -p $pass ssh -o StrictHostKeyChecking=no $user@$ip -p $port 'cd e2e-packet && bash script/2-infra-setup/setup-sc/openebs-sc node '"'$CI_JOB_ID'"'' '"'$CI_PIPELINE_ID'"' '"'$CI_COMMIT_SHA'"'
-}
-
-node() {
 
 time="date"
 current_time=$(eval $time)
-job_id=$(echo $1)
-pipeline_id=$(echo $2)
-commit_id=$(echo $3)
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
+commit_id=$CI_COMMIT_SHA
 source ~/.profile
 gittoken=$(echo "$github_token")
 
 present_dir=$(pwd)
 echo $present_dir
+
+echo "Setting up test dependencies.."
+${utils_path}/setup_dependencies infra-setup
 
 #pooling over previous job to complete
 echo "***********Applying openebs-storage-clas********"
@@ -55,12 +53,4 @@ bash script/utils/e2e-cr jobname:s2-j6-policies jobphase:Completed end_time:"$cu
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
-fi
-
-}
-
-if [ "$1" == "node" ];then
-  node $2 $3 $4
-else
-  pod
 fi
