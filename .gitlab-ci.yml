@@ -80,9 +80,14 @@ Create-striped-pool:
 .func_test_template:
   image: atulabhi/kops:v8
   stage: FUNCTIONAL
+  tags: 
+    - k8s-1-16
   when: always
   dependencies:
     - openebs-deploy
+  artifacts:
+    paths:
+      - openebs-packet/  
      
 cStor-Create-Snapshot:
   extends: .func_test_template
@@ -221,9 +226,14 @@ RWX-APP-DEPLOY:
 .chaos_test_template:
   image: atulabhi/kops:v8
   stage: CHAOS
+  tags: 
+    - k8s-1-16
   when: always
   dependencies:
     - openebs-deploy
+  artifacts:
+    paths:
+      - openebs-packet/  
 
 App-Kill:
   extends: .chaos_test_template
