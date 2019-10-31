@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID #Gitlab job id obtain from the gitlab env ($CI_JOB_ID).
 pipeline_id=$CI_PIPELINE_ID # Gitlab pipeline id obtained from gitlab env ($CI_PIPELINE_ID).
 commit_id=$CI_COMMIT_SHA #Gitlab commit id Obtained fron gilab env ($CI_COMMIT_SHA).
+releaseTag=$RELEASE_TAG 
 gitlab_stage=3-functional # Gitlab stage where this test case is running.
 
 source ~/.profile
@@ -22,7 +23,7 @@ ${utils_path}/setup_dependencies litmus-test
 
 #Creating e2e custom resource result for the test.
 bash script/utils/e2e-cr jobname:cas-performance jobphase:Waiting
-bash script/utils/e2e-cr jobname:cas-performance jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" 
+bash script/utils/e2e-cr jobname:cas-performance jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" 
 
 ################
 # LitmusBook 1 #
@@ -255,7 +256,7 @@ fi
 
 current_time=$(eval $time)
 # Update the e2e cr once the job is completed
-bash script/utils/e2e-cr jobname:cas-performance jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:$testResult
+bash script/utils/e2e-cr jobname:cas-performance jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:$testResult
 
 if [ "$rc_val" != "0" ]; then
 exit 1;

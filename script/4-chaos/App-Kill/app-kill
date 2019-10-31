@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 source ~/.profile
 #github token to push the test result into github mayadata-io/e2e-packet repository.
 #This token is set as an env in ~/.profile in the test cluster.
@@ -20,7 +21,7 @@ ${utils_path}/setup_dependencies litmus-test
 
 #Creating e2e custom resource result for the test.
 bash script/utils/e2e-cr jobname:app-kill jobphase:Waiting
-bash script/utils/e2e-cr jobname:app-kill jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:app-kill jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 ################
 # LitmusBook 1 #
@@ -254,7 +255,7 @@ exit 1;
 fi
 
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:app-kill jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
+bash script/utils/e2e-cr jobname:app-kill jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Pass
 # python3 script/utils/result/result_update.py $job_id 1PP5 4-chaos "Induce application pod failure and check if it is recovered successfully" Pass $pipeline_id "$current_time" $commit_id $gittoken
 
 if [ "$rc_val" != "0" ]; then

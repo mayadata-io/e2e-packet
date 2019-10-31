@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 
 source ~/.profile
 gittoken=$(echo "$github_token")
@@ -18,7 +19,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/e2e-cr jobname:jiva-internal-snapshot-deletion jobphase:Waiting
-bash script/utils/e2e-cr jobname:jiva-internal-snapshot-deletion jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" 
+bash script/utils/e2e-cr jobname:jiva-internal-snapshot-deletion jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 ################
 # LitmusBook 1 #

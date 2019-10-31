@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 
 source ~/.profile
 gittoken=$(echo "$github_token")
@@ -18,7 +19,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/pooling jobname:snapshot
-bash script/utils/e2e-cr jobname:snapshot-clone jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:snapshot-clone jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 # echo "*******Deploying Busybox Application****"
 
@@ -149,7 +150,7 @@ fi
 # fi
 
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:snapshot-clone jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
+bash script/utils/e2e-cr jobname:snapshot-clone jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Pass
 
 # python3 script/utils/result/result_update.py $job_id ZK9B 3-functional "Check if the clone can be created using volume snapshot" Pass $pipeline_id "$current_time" $commit_id $gittoken
 
