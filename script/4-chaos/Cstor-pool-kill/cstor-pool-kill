@@ -19,6 +19,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/pooling jobname:pool-delete
+bash script/utils/e2e-cr jobname:pool-kill jobphase:Waiting
 bash script/utils/e2e-cr jobname:pool-kill jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 ################
