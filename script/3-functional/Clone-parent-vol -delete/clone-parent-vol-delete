@@ -26,6 +26,7 @@ echo "*******Taking clone of BusyBox snapshot application**********"
 test_name=$(bash script/utils/generate_test_name testcase=delete-parent-volume metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 cp experiments/functional/restrict-parent-volume-deletion/run_litmus_test.yml run_parent_vol_test.yml
 

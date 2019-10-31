@@ -29,6 +29,7 @@ bash script/utils/e2e-cr jobname:target-mgmt-kill jobphase:Running init_time:"$c
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-mgmt-kill metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 # Running the litmus test for Busybox Deployment
 

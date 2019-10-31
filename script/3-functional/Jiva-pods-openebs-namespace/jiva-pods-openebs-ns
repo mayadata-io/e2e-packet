@@ -34,6 +34,7 @@ bash script/utils/e2e-cr jobname:jiva-openebs-ns jobphase:Running init_time:"$cu
 run_id="provision";test_name=$(bash script/utils/generate_test_name testcase=jiva-pods-openebs-ns metadata=${run_id})
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 # copy the content of run_litmus_test.yml into a different file to update the test specific parameters.
 cp experiments/functional/jiva-pods-openebs-ns/run_litmus_test.yml busybox_jiva_openebs.yml

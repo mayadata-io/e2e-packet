@@ -30,6 +30,7 @@ echo $test_name
 # LitmusBook 1 #
 ################
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 cp apps/percona/deployers/run_litmus_test.yml deploy_run_test_percona.yml
 

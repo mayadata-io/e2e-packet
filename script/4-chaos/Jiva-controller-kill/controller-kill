@@ -37,6 +37,7 @@ bash script/utils/e2e-cr jobname:controller-kill jobphase:Running init_time:"$cu
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-ctrl-kill metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 echo "Running the litmus test for Busybox Deployment.."
 

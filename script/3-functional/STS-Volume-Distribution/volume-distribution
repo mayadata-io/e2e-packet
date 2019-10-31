@@ -22,6 +22,7 @@ test_name=$(bash script/utils/generate_test_name testcase=replica-distribution m
 echo $test_name
 
 echo "*******Deploying Application and Check the statefulset storage volume distributed************"
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 : << EOF
   ---------------------------------------------------------------------------------------------------------------------

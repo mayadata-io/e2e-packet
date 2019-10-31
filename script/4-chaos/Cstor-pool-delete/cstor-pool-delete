@@ -29,6 +29,7 @@ echo "*******Deploying Busybox Application****"
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-pool-delete metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 echo "Running the litmus test for Busybox Deployment.."
 

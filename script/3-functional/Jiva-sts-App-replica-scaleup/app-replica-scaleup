@@ -29,6 +29,7 @@ echo $test_name
 # LitmusBook 1 #
 ################
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 echo "Running the litmus test for Busybox Deployment.."
 cp apps/busybox/deployers/run_litmus_test.yml deploy_run_test_jiva.yml

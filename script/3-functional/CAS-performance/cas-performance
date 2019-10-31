@@ -37,6 +37,7 @@ bash script/utils/e2e-cr jobname:cas-performance jobphase:Running init_time:"$cu
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-cas-performance metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 # copy the content of deployer run_litmus_test.yml into a different file to update the test specific parameters.
 cp apps/busybox/deployers/run_litmus_test.yml deploy_busybox_cas_performance.yml

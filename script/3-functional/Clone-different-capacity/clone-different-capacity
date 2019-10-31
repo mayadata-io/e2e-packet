@@ -27,6 +27,7 @@ bash script/utils/e2e-cr jobname:clone-different-capacity jobphase:Running init_
 run_id="different-capacity";test_name=$(bash script/utils/generate_test_name testcase=create-clone metadata=${run_id})
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 cp experiments/functional/clone-creation/run_litmus_test.yml run_diff_vol_size_clone.yml
 

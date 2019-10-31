@@ -42,6 +42,7 @@ EOF
 run_id="jiva";test_name=$(bash script/utils/generate_test_name testcase=create-clone metadata=${run_id})
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 cp experiments/functional/clone-creation/run_litmus_test.yml run_jiva_clone_test.yml
 
