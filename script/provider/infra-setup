@@ -49,7 +49,7 @@ for i in efk-vars.yml efk.yml get_url.yml; do
 done
 
 echo "EFK: Deploying Aggregrator and Forwarder on client"
-ansible-playbook efk.yml --extra-vars "commit_id=$CI_COMMIT_SHA pipeline_id=$CI_PIPELINE_ID" 
+ansible-playbook efk.yml --extra-vars "commit_id=$CI_COMMIT_SHA pipeline_id=$CI_PIPELINE_ID e_user=$E_USER e_password=$E_PASSWORD" 
 
 ## Clone the litmus repo, navigate to litmus root 
 
