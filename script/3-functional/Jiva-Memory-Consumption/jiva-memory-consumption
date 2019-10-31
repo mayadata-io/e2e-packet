@@ -27,6 +27,7 @@ bash script/utils/e2e-cr jobname:memory-consumption-jiva jobphase:Running init_t
 
 test_name=$(bash script/utils/generate_test_name testcase=memleak-test metadata="")
 echo $test_name
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 
 cp experiments/functional/custom/tests/memcheck/run_litmus_test.yml memcheck_jiva.yml

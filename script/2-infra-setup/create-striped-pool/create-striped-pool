@@ -21,6 +21,7 @@ bash script/utils/e2e-cr jobname:s2-j2-cstor-striped-pool jobphase:Running init_
 
 run_id="striped";test_name=$(bash script/utils/generate_test_name testcase=cstor-block-device-pool-provision metadata=${run_id})
 echo $test_name
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 
 # copy the content of deployer run_litmus_test.yml into a different file to update the test specific parameters.

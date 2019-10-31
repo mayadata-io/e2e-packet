@@ -23,6 +23,7 @@ bash script/utils/e2e-cr jobname:data-integrity-cstor jobphase:Running
 
 test_name=$(bash script/utils/generate_test_name testcase=fio-data-integrity metadata="")
 echo $test_name
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 cp experiments/functional/fio/data-integrity/run_litmus_test.yml data_integrity_cstor.yml
 

@@ -31,6 +31,7 @@ echo $test_name
 # LitmusBook 1 #
 ################
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 # copy the content of deployer run_litmus_test.yml into a different file to update the test specific parameters.
 cp apps/busybox/deployers/run_litmus_test.yml deploy_rep_node_affinity.yml

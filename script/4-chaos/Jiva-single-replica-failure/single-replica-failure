@@ -37,6 +37,7 @@ bash script/utils/e2e-cr jobname:jiva-single-rep-kill jobphase:Running init_time
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-single-rep-kill metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 echo "Running the litmus test for Busybox Deployment.."
 

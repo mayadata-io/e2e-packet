@@ -30,6 +30,7 @@ bash script/utils/e2e-cr jobname:app-target-affinity jobphase:Running
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-target-affinity metadata="")
 echo $test_name
 
+git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 cp apps/busybox/deployers/run_litmus_test.yml deploy_affinity_test.yml
 
