@@ -20,6 +20,7 @@ ${utils_path}/setup_dependencies litmus-test
 
 #bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Waiting
 bash script/utils/pooling jobname:snap-rebuild-multiple-rep
+bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Waiting
 bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 #bash script/utils/e2e-cr jobname:clone-during-snap-rebuild jobphase:Waiting
 #bash script/utils/e2e-cr jobname:clone-pre-snap-rebuild jobphase:Waiting

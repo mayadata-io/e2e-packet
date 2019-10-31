@@ -17,6 +17,7 @@ ${utils_path}/setup_dependencies infra-setup
 #pooling over previous job to complete
 echo "*******Creating cstor-pool**************"
 bash script/utils/pooling jobname:s2-j1-openebs-deploy
+bash script/utils/e2e-cr jobname:s2-j2-cstor-striped-pool jobphase:Waiting
 bash script/utils/e2e-cr jobname:s2-j2-cstor-striped-pool jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 run_id="striped";test_name=$(bash script/utils/generate_test_name testcase=cstor-block-device-pool-provision metadata=${run_id})

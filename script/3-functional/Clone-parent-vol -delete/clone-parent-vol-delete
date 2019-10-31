@@ -19,6 +19,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/pooling jobname:clone-different-capacity
+bash script/utils/e2e-cr jobname:clone-parent-volume-delete jobphase:Waiting
 bash script/utils/e2e-cr jobname:clone-parent-volume-delete jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 echo "*******Taking clone of BusyBox snapshot application**********"
