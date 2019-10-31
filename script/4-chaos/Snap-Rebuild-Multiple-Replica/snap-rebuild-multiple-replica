@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 
 source ~/.profile
 gittoken=$(echo "$github_token")
@@ -18,7 +19,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/pooling jobname:snap-rebuild-single-rep
-bash script/utils/e2e-cr jobname:snap-rebuild-multiple-rep jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:snap-rebuild-multiple-rep jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 ################
 # LitmusBook 1 #
@@ -216,7 +217,7 @@ exit 1;
 fi
 
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:snap-rebuild-multiple-rep jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
+bash script/utils/e2e-cr jobname:snap-rebuild-multiple-rep jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Pass
 # python3 script/utils/result/result_update.py $job_id QKFK 4-chaos "Check if the snapshot cannot be rebuilt when the quorum condition is not met" Pass $pipeline_id "$current_time" $commit_id $gittoken
 
 if [ "$rc_val" != "0" ]; then

@@ -7,6 +7,7 @@ gittoken=$(echo "$github_token")
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 
 time="date"
 current_time=$(eval $time)
@@ -17,7 +18,7 @@ echo $present_dir
 echo "Setting up test dependencies.."	
 ${utils_path}/setup_dependencies litmus-test
 
-bash script/utils/e2e-cr jobname:target-kill jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:target-kill jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 bash script/utils/e2e-cr jobname:target-kill jobphase:Running init_time:"$current_time"
 
 ################
@@ -234,7 +235,7 @@ exit 1;
 fi
 
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:target-kill jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
+bash script/utils/e2e-cr jobname:target-kill jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Pass
 # python3 script/utils/result/result_update.py $job_id VZPY 4-chaos "Induce failure on cstor-target pod and check if it gets scheduled immediately and the application is available" Pass $pipeline_id "$current_time" $commit_id $gittoken
 
 if [ "$rc_val" != "0" ]; then

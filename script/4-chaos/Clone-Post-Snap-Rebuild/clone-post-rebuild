@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 
 source ~/.profile
 gittoken=$(echo "$github_token")
@@ -19,7 +20,7 @@ ${utils_path}/setup_dependencies litmus-test
 
 #bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Waiting
 bash script/utils/pooling jobname:snap-rebuild-multiple-rep
-bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 #bash script/utils/e2e-cr jobname:clone-during-snap-rebuild jobphase:Waiting
 #bash script/utils/e2e-cr jobname:clone-pre-snap-rebuild jobphase:Waiting
 
@@ -133,7 +134,7 @@ fi
 current_time=$(eval $time)
 
 # Update the e2e cr once the job is completed
-bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:$testResult
+bash script/utils/e2e-cr jobname:clone-post-snap-rebuild jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:$testResult
 
 # python3 script/utils/result/result_update.py $job_id $case_id 4-chaos "Check if the clone can be created after snapshot rebuilt successfully" Pass $pipeline_id "$current_time" $commit_id $gittoken
 

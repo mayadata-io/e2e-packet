@@ -7,13 +7,14 @@ time="date"
 source ~/.profile
 gittoken=$(echo "$github_token")
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 current_time=$(eval $time)
 
 echo "Setting up test dependencies.."	
 ${utils_path}/setup_dependencies litmus-test	
 
 bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Waiting
-bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 test_name=$(bash script/utils/generate_test_name testcase=wordpress-deployment metadata="")
 echo $test_name
@@ -51,7 +52,7 @@ testResult=$(kubectl get litmusresult ${test_name} --no-headers -o custom-column
 
 ## Check the test status & result from the litmus result custom resource
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:$testResult
+bash script/utils/e2e-cr jobname:app-deploy-rwx jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:$testResult
 
 # python3 script/utils/result/result_update.py $job_id WOEM 3-functional "Deploy the application using nfs-provisioner accessmode as a readwritemany" $testResult $pipeline_id "$current_time" $commit_id $gittoken
 

@@ -4,6 +4,7 @@ set -x
 job_id=$CI_JOB_ID
 pipeline_id=$CI_PIPELINE_ID
 commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
 
 time="date"
 current_time=$(eval $time)
@@ -15,7 +16,7 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test	
 
 bash script/utils/e2e-cr jobname:target-network-delay jobphase:Waiting
-bash script/utils/e2e-cr jobname:target-network-delay jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id"
+bash script/utils/e2e-cr jobname:target-network-delay jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 ################
 # LitmusBook 1 #
@@ -210,7 +211,7 @@ exit 1;
 fi
 
 current_time=$(eval $time)
-bash script/utils/e2e-cr jobname:target-network-delay jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" test_result:Pass
+bash script/utils/e2e-cr jobname:target-network-delay jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Pass
 
 if [ "$rc_val" != "0" ]; then
 exit 1;
