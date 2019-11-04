@@ -14,4 +14,3 @@ spec:
     job_id: <job-id>
     pipeline_id: <pipeline-id>
     event:   
-      
