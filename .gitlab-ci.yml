@@ -319,17 +319,17 @@ Jiva-single-replica-failure:
     - chmod 775 ./script/4-chaos/Jiva-single-replica-failure/single-replica-failure
     - ./script/4-chaos/Jiva-single-replica-failure/single-replica-failure
 
-Jiva-controller-kill:
-  extends: .chaos_test_template
-  script:
-    - chmod 775 ./script/4-chaos/Jiva-controller-kill/controller-kill
-    - ./script/4-chaos/Jiva-controller-kill/controller-kill
+# Jiva-controller-kill:
+#   extends: .chaos_test_template
+#   script:
+#     - chmod 775 ./script/4-chaos/Jiva-controller-kill/controller-kill
+#     - ./script/4-chaos/Jiva-controller-kill/controller-kill
 
-Jiva-controller-network-delay:
-  extends: .chaos_test_template
-  script:
-    - chmod 775 ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
-    - ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
+# Jiva-controller-network-delay:
+#   extends: .chaos_test_template
+#   script:
+#     - chmod 775 ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
+#     - ./script/4-chaos/Jiva-controller-network-delay/controller-network-delay
 
 Jiva-replica-failure:
   extends: .chaos_test_template

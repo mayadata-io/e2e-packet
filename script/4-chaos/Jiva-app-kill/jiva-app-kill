@@ -21,14 +21,14 @@ ${utils_path}/setup_dependencies litmus-test
 bash script/utils/e2e-cr jobname:jiva-app-kill jobphase:Waiting
 bash script/utils/e2e-cr jobname:jiva-app-kill jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
+################
+# LitmusBook 1 #
+################
+
 echo "*******Deploying Busybox Application****"
 
 test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-app-kill-jiva metadata="")
 echo $test_name
-
-################
-# LitmusBook 1 #
-################
 
 git clone https://github.com/mayadata-io/litmus.git
 cd litmus
@@ -69,9 +69,6 @@ if [ "$?" != "0" ]; then
 # python3 script/utils/result/result_update.py $job_id AUZF 4-chaos "Induce application pod failure and check if it is recovered successfully" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
-
-run_id="jiva";test_name=$(bash script/utils/generate_test_name testcase=application-pod-failure metadata=${run_id})
-echo $test_name
 
 ################
 # LitmusBook 2 #
@@ -124,6 +121,9 @@ fi
 # LitmusBook 3 #
 ################
 
+run_id="jiva";test_name=$(bash script/utils/generate_test_name testcase=application-pod-failure metadata=${run_id})
+echo $test_name
+
 cd litmus
 cp experiments/chaos/app_pod_failure/run_litmus_test.yml app_kill_jiva.yml
 
@@ -159,11 +159,6 @@ if [ "$?" != "0" ]; then
 # python3 script/utils/result/result_update.py $job_id AUZF 4-chaos "Induce application pod failure and check if it is recovered successfully" Fail $pipeline_id "$current_time" $commit_id $gittoken
 exit 1;
 fi
-
-echo "********Deprovisioning Busybox Application*******"
-
-test_name=$(bash script/utils/generate_test_name testcase=busybox-deprovision-app-kill-jiva metadata="")
-echo $test_name
 
 ################
 # LitmusBook 4 #
@@ -219,6 +214,11 @@ fi
 ################
 # LitmusBook 5 #
 ################
+
+echo "********Deprovisioning Busybox Application*******"
+
+test_name=$(bash script/utils/generate_test_name testcase=busybox-deprovision-app-kill-jiva metadata="")
+echo $test_name
 
 cd litmus
 cp apps/busybox/deployers/run_litmus_test.yml deprovision_app_kill_jiva.yml
