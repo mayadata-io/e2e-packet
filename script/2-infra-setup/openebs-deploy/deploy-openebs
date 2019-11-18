@@ -33,7 +33,7 @@ kubectl apply -f script/utils/e2e-crd.yml
 echo "*****Deploying openebs*******"
 bash script/utils/e2e-cr jobname:s2-j1-openebs-deploy jobphase:Waiting
 bash script/utils/e2e-cr jobname:s2-j1-openebs-deploy jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
-bash script/utils/e2e-cr jobname:s2-j6-policies jobphase:Waiting 
+bash script/utils/e2e-cr jobname:s2-j3-policies jobphase:Waiting 
 bash script/utils/e2e-cr jobname:s2-j2-cstor-striped-pool jobphase:Waiting 
 
 source ~/.profile

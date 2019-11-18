@@ -19,8 +19,8 @@ ${utils_path}/setup_dependencies infra-setup
 #pooling over previous job to complete
 echo "***********Applying openebs-storage-clas********"
 bash script/utils/pooling jobname:s2-j2-cstor-striped-pool
-bash script/utils/e2e-cr jobname:s2-j6-policies jobphase:Waiting
-bash script/utils/e2e-cr jobname:s2-j6-policies jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
+bash script/utils/e2e-cr jobname:s2-j3-policies jobphase:Waiting
+bash script/utils/e2e-cr jobname:s2-j3-policies jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
 test_name=$(bash script/utils/generate_test_name testcase=cstor-storage-policies metadata="")
 echo $test_name
