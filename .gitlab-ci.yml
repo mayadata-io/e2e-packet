@@ -164,11 +164,11 @@ Jiva-Volume-Scaleup:
     - chmod 775 ./script/3-functional/Jiva-Volume-scaleup/jiva-volume-scaleup
     - ./script/3-functional/Jiva-Volume-scaleup/jiva-volume-scaleup
 
-cStor-Volume-Capacity-Fill:
-  extends: .func_test_template
-  script:
-    - chmod 775 ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
-    - ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
+# cStor-Volume-Capacity-Fill:
+#   extends: .func_test_template
+#   script:
+#     - chmod 775 ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
+#     - ./script/3-functional/Volume-Capacity-Fill/volume-capacity-fill
       
 cStor-STS-Volume-Distribute:
   extends: .func_test_template
