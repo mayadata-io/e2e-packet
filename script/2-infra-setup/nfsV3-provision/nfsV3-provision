@@ -20,22 +20,24 @@ bash script/utils/pooling jobname:s2-j3-policies
 bash script/utils/e2e-cr jobname:s2-j4-nfs-provisioner jobphase:Waiting
 bash script/utils/e2e-cr jobname:s2-j4-nfs-provisioner jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 
-test_name=$(bash script/utils/generate_test_name testcase=nfs-provision metadata="")
+run_id="version3";test_name=$(bash script/utils/generate_test_name testcase=nfs-provision metadata=${run_id})
 echo $test_name
 
 git clone https://github.com/mayadata-io/litmus.git
 cd litmus
 
 # copy the content of deployer run_litmus_test.yml into a different file to update the test specific parameters.
-cp providers/nfs-provisioner/run_litmus_test.yml nfsv4-provision.yml
+cp providers/nfs-provisioner/run_litmus_test.yml nfsv3-provision.yml
 
 sed -i -e 's/imagePullPolicy: Always/imagePullPolicy: IfNotPresent/g' \
--e 's/value: app-nfs-ns/value: app-nfsv4-ns/g' \
--e 's/value: openebs-nfs/value: openebs-nfs4/g' nfsv4-provision.yml
+-e 's/value: app-nfs-ns/value: app-nfsv3-ns/g' \
+-e 's/value: vers=4.1/value: vers=3/g' \
+-e 's/app: nfs-litmus/app: nfsv3-litmus/g' \
+-e 's/value: openebs-nfs/value: openebs-nfs3/g' nfsv3-provision.yml
 
-cat nfsv4-provision.yml
+cat nfsv3-provision.yml
 
-bash ../script/utils/litmus_job_runner label='app:nfs-litmus' job=nfsv4-provision.yml
+bash ../script/utils/litmus_job_runner label='app:nfsv3-litmus' job=nfsv3-provision.yml
 bash ../script/utils/dump_cluster_state;
 cd ..
 bash script/utils/event_updater jobname:s2-j4-nfs-provisioner $test_name jobid:"$job_id" pipelineid:"$pipeline_id"

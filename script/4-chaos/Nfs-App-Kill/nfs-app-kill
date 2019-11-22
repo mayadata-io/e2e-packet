@@ -42,7 +42,7 @@ cp apps/busybox/deployers/run_litmus_test.yml busybox_nfs_app_kill.yml
   ---------------------------------------------------------------------------------------------------------------------
  | specAttribute     | kind   |         default value               | test specifc value                               |
   ---------------------------------------------------------------------------------------------------------------------|
- | appNamespace      | env    | app-busybox-ns                      | app-nfs-ns                                       | 
+ | appNamespace      | env    | app-busybox-ns                      | app-nfsv3-ns                                       | 
  | Litmus job label  | label  | app: busybox-litmus                 | app: deploy-busybox-nfs-app-kill                 |
  | appLabel          | env    | app=busybox-sts                     | app=nfs-app-kill                                 | 
  | storage class     | env    | openebs-cstor-sparse                | openebs-nfsv4                                    |
@@ -54,9 +54,9 @@ EOF
 sed -i -e 's/app: busybox-litmus/app: deploy-busybox-nfs-app-kill/g' \
 -e 's/app=busybox-sts/app=nfs-app-kill/g' \
 -e 's/value: statefulset/value: deployment/g' \
--e 's/value: openebs-cstor-sparse/value: openebs-nfs4/g' \
+-e 's/value: openebs-cstor-sparse/value: openebs-nfs3/g' \
 -e 's/value: openebs-busybox/value: openebs-bb-appkill/g' \
--e 's/value: app-busybox-ns/value: app-nfs-ns/g' busybox_nfs_app_kill.yml
+-e 's/value: app-busybox-ns/value: app-nfsv3-ns/g' busybox_nfs_app_kill.yml
 cat busybox_nfs_app_kill.yml
 
 # Run the Litmus job and get the details of the litmus job from litmus_job_runner utils.
@@ -90,13 +90,13 @@ cp apps/busybox/liveness/run_litmus_test.yml busybox_loadgen_nfs_app_kill.yml
   ---------------------------------------------------------------------------------------------------------------------
  | specAttribute     | kind   |         default value               | test specifc value                               |
   ---------------------------------------------------------------------------------------------------------------------|
- | appNamespace      | env    | app-busybox-ns                      | app-nfs-ns                                       | 
+ | appNamespace      | env    | app-busybox-ns                      | app-nfsv3-ns                                       | 
  | Litmus job label  | label  | liveness: litmus-busybox-liveness   | liveness: busybox-liveness-nfs-app-kill          |
  | appLabel          | env    | app=busybox-sts                     | app=nfs-app-kill                                 | 
   ----------------------------------------------------------------------------------------------------------------------
 EOF
 
-sed -i -e 's/value: app-busybox-ns/value: app-nfs-ns/g' \
+sed -i -e 's/value: app-busybox-ns/value: app-nfsv3-ns/g' \
 -e 's/app=busybox-sts/app=nfs-app-kill/g' \
 -e 's/liveness: litmus-busybox-liveness/liveness: busybox-liveness-nfs-app-kill/g' busybox_loadgen_nfs_app_kill.yml
 
@@ -135,7 +135,7 @@ cp experiments/chaos/app_pod_failure/run_litmus_test.yml nfs_app_kill.yml
 
 sed -i -e 's/app=jenkins-app/app=nfs-app-kill/g' \
 -e 's/name: application-pod-failure/name: nfs-application-pod-failure/g' \
--e 's/value: app-jenkins-ns/value: app-nfs-ns/g' nfs_app_kill.yml
+-e 's/value: app-jenkins-ns/value: app-nfsv3-ns/g' nfs_app_kill.yml
 
 echo "Running the litmus test for Busybox Deployment application pod kill.."
 
@@ -175,14 +175,14 @@ cp apps/busybox/liveness/run_litmus_test.yml busybox_loadgen_deprovision_nfs_app
   ---------------------------------------------------------------------------------------------------------------------
  | specAttribute     | kind   |         default value               | test specifc value                               |
   ---------------------------------------------------------------------------------------------------------------------|
- | appNamespace      | env    | app-busybox-ns                      | app-nfs-ns                                         | 
+ | appNamespace      | env    | app-busybox-ns                      | app-nfsv3-ns                                        | 
  | appLabel          | env    | app=busybox-sts                     | app=nfs-app-kill                                     |
  | Litmus job label  | label  | liveness: litmus-busybox-liveness   | liveness: busybox-liveness-deprovision-nfs-app-kill  |
  | action            | env    | provision                           | deprovision                                      | 
   ----------------------------------------------------------------------------------------------------------------------
 EOF
 
-sed -i -e 's/value: app-busybox-ns/value: app-nfs-ns/g' \
+sed -i -e 's/value: app-busybox-ns/value: app-nfsv3-ns/g' \
 -e 's/app=busybox-sts/app=nfs-app-kill/g' \
 -e 's/value: provision/value: deprovision/g' \
 -e 's/generateName: litmus-busybox-liveness/generateName: busybox-liveness-dep-nfs-app-kill/g' \
@@ -226,7 +226,7 @@ cp apps/busybox/deployers/run_litmus_test.yml deprovision_nfs_app_kill.yml
   ---------------------------------------------------------------------------------------------------------------------
  | specAttribute     | kind   |         default value               | test specifc value                               |
   ---------------------------------------------------------------------------------------------------------------------|
- | appNamespace      | env    | app-busybox-ns                      | app-nfs-ns                                       | 
+ | appNamespace      | env    | app-busybox-ns                      | app-nfsv3-ns                                       | 
  | Litmus job label  | label  | app: busybox-litmus                 | app: busybox-deprovision-app-nfs-ns              |
  | appLabel          | env    | app=busybox-sts                     | app=nfs-app-kill                                 | 
  | storage class     | env    | openebs-cstor-sparse                | openebs-cstor-disk                               |
@@ -241,8 +241,8 @@ sed -i -e 's/generateName: litmus-busybox-deploy/generateName: busybox-deprovisi
 -e 's/app=busybox-sts/app=nfs-app-kill/g' \
 -e 's/value: statefulset/value: deployment/g' \
 -e 's/value: openebs-busybox/value: openebs-bb-appkill/g' \
--e 's/value: openebs-cstor-sparse/value: openebs-nfs4/g' \
--e 's/value: app-busybox-ns/value: app-nfs-ns/g' \
+-e 's/value: openebs-cstor-sparse/value: openebs-nfs3/g' \
+-e 's/value: app-busybox-ns/value: app-nfsv3-ns/g' \
 -e 's/value: provision/value: deprovision/g' deprovision_nfs_app_kill.yml
 
 ## Running the litmus test for Busybox Deprovision

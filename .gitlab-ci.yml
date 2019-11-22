@@ -75,7 +75,7 @@ Create-striped-pool:
     paths:
       - openebs-packet/
 
-NFSv4-Provision:
+NFSv3-Provision:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
@@ -83,8 +83,8 @@ NFSv4-Provision:
   dependencies:
     - packet-cluster
   script:
-   - chmod 775 ./script/2-infra-setup/nfsV4-provision/nfsV4-provision
-   - ./script/2-infra-setup/nfsV4-provision/nfsV4-provision
+   - chmod 775 ./script/2-infra-setup/nfsV3-provision/nfsV3-provision
+   - ./script/2-infra-setup/nfsV3-provision/nfsV3-provision
   artifacts:
     paths:
       - openebs-packet/
