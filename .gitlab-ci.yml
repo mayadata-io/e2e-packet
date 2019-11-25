@@ -75,19 +75,19 @@ Create-striped-pool:
     paths:
       - openebs-packet/
 
-NFSv3-Provision:
-  image: atulabhi/kops:v8
-  stage: PROVIDER-INFRA-SETUP
-  tags: 
-    - k8s-1-16
-  dependencies:
-    - packet-cluster
-  script:
-   - chmod 775 ./script/2-infra-setup/nfsV3-provision/nfsV3-provision
-   - ./script/2-infra-setup/nfsV3-provision/nfsV3-provision
-  artifacts:
-    paths:
-      - openebs-packet/
+# NFSv3-Provision:
+#   image: atulabhi/kops:v8
+#   stage: PROVIDER-INFRA-SETUP
+#   tags: 
+#     - k8s-1-16
+#   dependencies:
+#     - packet-cluster
+#   script:
+#    - chmod 775 ./script/2-infra-setup/nfsV3-provision/nfsV3-provision
+#    - ./script/2-infra-setup/nfsV3-provision/nfsV3-provision
+#   artifacts:
+#     paths:
+#       - openebs-packet/
 
 
 # ######################## Functional stage ############################
@@ -316,11 +316,11 @@ volume-mgmt-kill:
     - chmod 775 ./script/4-chaos/Cstor-volume-mgmt-kill/cstor-volume-mgmt-kill
     - ./script/4-chaos/Cstor-volume-mgmt-kill/cstor-volume-mgmt-kill
 
-nfs-cstor-app-kill:
-  extends: .chaos_test_template
-  script:
-    - chmod 775 ./script/4-chaos/Nfs-App-Kill/nfs-app-kill
-    - ./script/4-chaos/Nfs-App-Kill/nfs-app-kill    
+# nfs-cstor-app-kill:
+#   extends: .chaos_test_template
+#   script:
+#     - chmod 775 ./script/4-chaos/Nfs-App-Kill/nfs-app-kill
+#     - ./script/4-chaos/Nfs-App-Kill/nfs-app-kill    
 
 Jiva-App-Kill:
   extends: .chaos_test_template
