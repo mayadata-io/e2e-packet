@@ -21,7 +21,7 @@ packet-cluster:
   image: chandankumar4/packet:v4
   stage: CLUSTER-SETUP
   tags: 
-    - k8s-1-16 
+    - k8s-1-14 
   script:
     - mkdir -p ~/.ssh && ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
     - echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
@@ -37,7 +37,7 @@ openebs-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-16
+    - k8s-1-14
   dependencies:
     - packet-cluster
   script: 
@@ -51,7 +51,7 @@ openebs-sc-deploy:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-16
+    - k8s-1-14
   dependencies:
     - packet-cluster
   script:
@@ -65,7 +65,7 @@ Create-striped-pool:
   image: atulabhi/kops:v8
   stage: PROVIDER-INFRA-SETUP
   tags: 
-    - k8s-1-16
+    - k8s-1-14
   dependencies:
     - packet-cluster
   script:
@@ -79,7 +79,7 @@ Create-striped-pool:
 #   image: atulabhi/kops:v8
 #   stage: PROVIDER-INFRA-SETUP
 #   tags: 
-#     - k8s-1-16
+#     - k8s-1-14
 #   dependencies:
 #     - packet-cluster
 #   script:
@@ -96,7 +96,7 @@ Create-striped-pool:
   image: atulabhi/kops:v8
   stage: FUNCTIONAL
   tags: 
-    - k8s-1-16
+    - k8s-1-14
   when: always
   dependencies:
     - openebs-deploy
@@ -242,7 +242,7 @@ RWX-APP-DEPLOY:
   image: atulabhi/kops:v8
   stage: CHAOS
   tags: 
-    - k8s-1-16
+    - k8s-1-14
   when: always
   dependencies:
     - openebs-deploy
@@ -286,11 +286,11 @@ Target-Network-Delay:
     - chmod 775 ./script/4-chaos/Target-Network-Delay/target-network-delay
     - ./script/4-chaos/Target-Network-Delay/target-network-delay
 
-Target-Network-Loss:
-  extends: .chaos_test_template
-  script: 
-    - chmod 775 ./script/4-chaos/Target-Network-Loss/target-network-loss
-    - ./script/4-chaos/Target-Network-Loss/target-network-loss
+# Target-Network-Loss:
+#   extends: .chaos_test_template
+#   script: 
+#     - chmod 775 ./script/4-chaos/Target-Network-Loss/target-network-loss
+#     - ./script/4-chaos/Target-Network-Loss/target-network-loss
 
 Snap-Rebuild-single-replica:
   extends: .chaos_test_template
@@ -366,7 +366,7 @@ cleanup-packet:
     - packet-cluster
   stage: CLUSTER-CLEANUP
   tags: 
-    - k8s-1-16
+    - k8s-1-14
   script: 
     - chmod 755 ./script/5-cleanup/packet-cleanup
     - ./script/5-cleanup/packet-cleanup
