@@ -286,11 +286,11 @@ Target-Network-Delay:
     - chmod 775 ./script/4-chaos/Target-Network-Delay/target-network-delay
     - ./script/4-chaos/Target-Network-Delay/target-network-delay
 
-Target-Network-Loss:
-  extends: .chaos_test_template
-  script: 
-    - chmod 775 ./script/4-chaos/Target-Network-Loss/target-network-loss
-    - ./script/4-chaos/Target-Network-Loss/target-network-loss
+# Target-Network-Loss:
+#   extends: .chaos_test_template
+#   script: 
+#     - chmod 775 ./script/4-chaos/Target-Network-Loss/target-network-loss
+#     - ./script/4-chaos/Target-Network-Loss/target-network-loss
 
 Snap-Rebuild-single-replica:
   extends: .chaos_test_template
