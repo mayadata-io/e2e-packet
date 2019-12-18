@@ -1,0 +1,34 @@
+---
+  # configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: experiment_name-configmap
+  namespace: default
+data:
+  parameters.yml: |
+---
+  # chaosengine.yaml
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-busybox
+  namespace: default
+spec:
+  jobCleanUpPolicy: retain
+  monitoring: false
+  appinfo: 
+    appns: default 
+    # FYI, To see app label, apply kubectl get pods --show-labels
+    applabel: "run=myserver" 
+    appkind: deployment
+  chaosServiceAccount: busybox 
+  experiments:
+    - name: experiment_name
+      spec:
+        components:
+        - name: APP_PVC
+          value: ''
+        - name: DATA_PERSISTENCE
+          value: ''
+
