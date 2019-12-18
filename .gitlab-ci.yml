@@ -9,6 +9,7 @@ stages:
   # - STATEFUL-APP-DEPLOY
   - FUNCTIONAL
   - CHAOS
+  - CHAOSCHARTS
   # - APP-DEPROVISION
   - CLUSTER-CLEANUP
 
@@ -357,6 +358,25 @@ Jiva-replica-node-affinity:
   script:
     - chmod 775 ./script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity
     - ./script/4-chaos/Jiva-replica-node-affinity/replica-node-affinity
+
+    ############### chaoscharts stage #################
+.chaoscharts_template:
+  image: atulabhi/kops:v8
+  stage: CHAOSCHARTS
+  tags: 
+    - k8s-1-16
+  when: always
+  dependencies:
+    - openebs-deploy
+  artifacts:
+    paths:
+      - openebs-packet/ 
+
+Openebs-Target-Pod-Failure:
+  extends: .chaoscharts_template
+  script:
+    - chmod 775 ./script/chaoscharts/Target-Pod-failure/target-pod-failure
+    - ./script/chaoscharts/Target-Pod-failure/target-pod-failure
 
       ############# cleanup stage ##############
 cleanup-packet:
