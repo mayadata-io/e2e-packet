@@ -95,6 +95,16 @@ fi
 
 # Performing openebs target pod failure
 
+# Download the experiment cr spec
+wget -O openebs_target_pod_failure.yml https://hub.litmuschaos.io/api/chaos?file=charts/openebs/openebs-target-pod-failure/experiment.yaml
+
+# Update the experiment cr to include configmap
+sed -i -e 's/#configmaps:/configmaps:/g' \
+-e 's/#- name: openebs-target-pod-failure/- name: openebs-target-pod-failure/g' \
+-e 's!#  mountPath: /mnt!  mountPath: /mnt!g' openebs_target_pod_failure.yml
+
+kubectl apply -f openebs_target_pod_failure.yml -n target-pod-failure
+
 # Creating Service Account
 cp script/utils/serviceaccount.yml run_serviceaccount.yml
 sed -i 's/namespace: default/namespace: target-pod-failure/g' run_serviceaccount.yml
