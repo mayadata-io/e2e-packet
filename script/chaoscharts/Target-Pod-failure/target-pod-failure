@@ -68,7 +68,7 @@ cp apps/busybox/liveness/run_litmus_test.yml busybox_loadgen_target_kill.yml
 
 sed -i -e 's/value: app-busybox-ns/value: target-pod-failure/g' \
 -e 's/app=busybox-sts/app=target-pod-failure/g' \
--e 's/liveness: litmus-busybox-liveness/liveness: busybox-liveness-targetkill/g' busybox_loadgen_target_kill.yml
+-e 's/liveness: litmus-busybox-liveness/liveness: busybox-liveness-target-pod-failure-charts/g' busybox_loadgen_target_kill.yml
 
 cat busybox_loadgen_target_kill.yml
 
@@ -78,7 +78,7 @@ sed -i '/command:/i \
 ' busybox_loadgen_target_kill.yml
 
 # Run the Litmus job and get the details of the litmus job from litmus_job_runner utils.
-bash ../script/utils/litmus_job_runner label='liveness:busybox-liveness-targetkill' job=busybox_loadgen_target_kill.yml
+bash ../script/utils/litmus_job_runner label='liveness:busybox-liveness-target-pod-failure-charts' job=busybox_loadgen_target_kill.yml
 cd ..
 # Get the cluster state Once the litmus jobs completed.
 bash script/utils/dump_cluster_state;
