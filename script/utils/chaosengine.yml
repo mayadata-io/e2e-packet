@@ -15,6 +15,14 @@ metadata:
   name: engine-busybox
   namespace: default
 spec:
+  # It can be app/infra
+  chaosType: 'app'
+  #ex. values: ns1:name=percona,ns2:run=nginx  
+  auxiliaryAppInfo: ""
+  components:
+    runner:
+      image: "litmuschaos/chaos-executor:1.0.0"
+      type: "go"
   jobCleanUpPolicy: retain
   monitoring: false
   appinfo: 
