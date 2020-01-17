@@ -123,8 +123,8 @@ sed -i -e 's/name: experiment_name-configmap/name: openebs-target-pod-failure/g'
 -e 's/name: experiment_name/name: openebs-target-pod-failure/g' run_chaosengine.yml
 
 ## Replace the value of DATA_PERSISTENCE with application name in chaosengine spec. 
-sed -i -e '/name: DATA_PERSISTENCE/{n;s/.*/            value: busybox/}' \
--e '/name: APP_PVC/{n;s/.*/            value: openebs-bb-targetkill/}' run_chaosengine.yml
+sed -i -e '/name: DATA_PERSISTENCE/{n;s/.*/          value: busybox/}' \
+-e '/name: APP_PVC/{n;s/.*/          value: openebs-bb-targetkill/}' run_chaosengine.yml
 
 ## Insert the set of variables for busybox data consistency util into configmap spec.
 sed -i '/parameters.yml: |/a \
@@ -142,10 +142,10 @@ kubectl apply -f run_chaosengine.yml
 
 ChaosEngineCmd="kubectl get pod -n target-pod-failure -l app=engine-busybox --no-headers -o custom-columns=:.metadata.name"
 chaosengine_pod=$(eval ${ChaosEngineCmd}); retcode=$?
-bash ../script/utils/error_handler ${retcode} msg="Unable to find chaos engine runner pod, exiting" action="exit"
+bash script/utils/error_handler ${retcode} msg="Unable to find chaos engine runner pod, exiting" action="exit"
 
 # Obtain the status of chaos engine pod 
-jobStateCmd="kubectl get pod ${chaosengine_pod} --no-headers -n litmus -o custom-columns=:status.phase"
+jobStateCmd="kubectl get pod ${chaosengine_pod} --no-headers -n target-pod-failure -o custom-columns=:status.phase"
 
 # Wait for completion of job
 while true; do
@@ -164,15 +164,15 @@ echo "Litmus test run Job has completed"
 # Obtain the job runner pod which is created by chaos engine runner pod
 JobRunnerCmd="kubectl get pod -n target-pod-failure -l name=openebs-target-pod-failure --no-headers -o custom-columns=:.metadata.name"
 jobrunner_pod=$(eval ${JobRunnerCmd}); retcode=$?
-bash ../script/utils/error_handler ${retcode} msg="Unable to find job runner pod created by chaos engine runner pod, exiting" action="exit"
+bash script/utils/error_handler ${retcode} msg="Unable to find job runner pod created by chaos engine runner pod, exiting" action="exit"
 
 echo "Dumping Litmus test pod logs for debug"; echo ""
-kubectl logs -f $jobrunner_pod -n target-pod-failure -c ansibletest
+kubectl logs -f $jobrunner_pod -n target-pod-failure
 
 bash script/utils/dump_cluster_state;
 
 # Obtain testResults
-testResult=$(kubectl get chaosresults engine-busybox-openebs-target-failure -n target-pod-failure --no-headers -o custom-columns=:.spec.experimentstatus.verdict)
+testResult=$(kubectl get chaosresults engine-busybox-openebs-target-pod-failure -n target-pod-failure --no-headers -o custom-columns=:.spec.experimentstatus.verdict)
 
 if [[ ${testResult} == "Pass" ]]; then
 echo "      target-pod-failure: Pass" >> result-target-pod-failure.yml
