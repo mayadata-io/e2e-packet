@@ -3,34 +3,4 @@ set -e
 
 path=$(pwd)
 echo "creating packet-cluster"
-mkdir -p ~/.kube   $path/cluster $path/cluster/ssh $path/cluster/.kube
-export PACKET_API_TOKEN=$packet_api_token
-git clone https://github.com/mayadata-io/litmus.git
-cd litmus/k8s/packet/k8s-installer
-echo "--------------- creating packet cluster --------------------"
-ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.16.1-00 os=ubuntu_16_04" -v | tee create_packet_cluster
-cat create_packet_cluster | grep failed=0
-if [ "$?" != "0" ]; then
-rm create_packet_cluster
-exit 1;
-fi
-echo "--------------Attaching disks to the nodes------------------"
-cd ../packet-storage
-ansible-playbook create-volume.yml -vv --extra-vars "packet_api=$packet_api_token" | tee disk_attach
-cat disk_attach | grep failed=0
-if [ "$?" != "0" ]; then
-rm disk_attach
-exit 1;
-fi
-kubectl get nodes
-kubectl get pods --all-namespaces
-kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/hack/rbac.yaml
-kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/hack/crds.yaml
-cp -r /tmp/packet/. $path/cluster/
-cat ~/.kube/config > $path/cluster/.kube/admin.conf
-cp -r ~/.kube/. $path/cluster/.kube/
-cp -r ~/.ssh/. $path/cluster/ssh
-kubectl create configmap kubeconfig --from-file=$path/cluster/.kube/admin.conf -n litmus
-kubectl get pods --all-namespaces
-kubectl get nodes
-
+sleep 10
