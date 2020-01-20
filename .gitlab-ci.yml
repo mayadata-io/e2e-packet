@@ -1,7 +1,7 @@
 ## TODO: Modularize the gitlab yaml to reuse templates
 
 ## Define the stages & order of execution
-lock: $CI_PROJECT_NAME
+lock: e2e-packet
 
 stages:
   - CLUSTER-SETUP
