@@ -1,8 +1,5 @@
 ## TODO: Modularize the gitlab yaml to reuse templates
 
-## Define the stages & order of execution
-lock: $CI_ENVIRONMENT_NAME
-
 stages:
   - CLUSTER-SETUP
   - PROVIDER-INFRA-SETUP
