@@ -2,5 +2,9 @@
 set -e
 
 path=$(pwd)
+releaseTag=$RELEASE_TAG
+echo $releaseTag
 echo "creating packet-cluster"
-sleep 10
+sleep 300
+releaseTag=$RELEASE_TAG
+echo $releaseTag
