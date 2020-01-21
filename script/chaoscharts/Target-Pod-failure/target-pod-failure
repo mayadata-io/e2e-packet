@@ -103,6 +103,8 @@ sed -i -e 's/#configmaps:/configmaps:/g' \
 -e 's/#- name: openebs-target-pod-failure/- name: openebs-target-pod-failure/g' \
 -e 's!#  mountPath: /mnt!  mountPath: /mnt!g' openebs_target_pod_failure.yml
 
+cat openebs_target_pod_failure.yml
+
 kubectl apply -f openebs_target_pod_failure.yml -n target-pod-failure
 
 # Creating Service Account
@@ -151,7 +153,7 @@ jobStateCmd="kubectl get pod ${chaosengine_pod} --no-headers -n target-pod-failu
 while true; do
   jstate=$(eval ${jobStateCmd}); rc=$?
   if [[ $rc -eq 0 && ! -z $jstate ]]; then
-    if [[ $jstate =~ 'Running' ]]; then
+    if [[ "$jstate" != "Succeeded" ]]; then
       sleep 10
     else break;
     fi
