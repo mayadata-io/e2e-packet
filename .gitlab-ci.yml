@@ -5,8 +5,6 @@
 stages:
   - CLUSTER-SETUP
   - PROVIDER-INFRA-SETUP
-  # - PROVISIONER-SETUP  
-  # - STATEFUL-APP-DEPLOY
   - FUNCTIONAL
   - CHAOS
   # - APP-DEPROVISION
@@ -88,7 +86,6 @@ Create-striped-pool:
 #   artifacts:
 #     paths:
 #       - openebs-packet/
-
 
 # ######################## Functional stage ############################
 
@@ -230,12 +227,6 @@ Jiva-pods-openebs-namespace:
     - chmod 775 ./script/3-functional/Jiva-pods-openebs-namespace/jiva-pods-openebs-ns
     - ./script/3-functional/Jiva-pods-openebs-namespace/jiva-pods-openebs-ns
 
-RWX-APP-DEPLOY:
-  extends: .func_test_template
-  script:
-    - chmod 775 ./script/3-functional/App-deploy-RWX/app-deploy-rwx
-    - ./script/3-functional/App-deploy-RWX/app-deploy-rwx
-
 ###################  chaos stage ########################
 
 .chaos_test_template:
@@ -274,11 +265,11 @@ cStor-Pool-Delete:
     - chmod 775 ./script/4-chaos/Cstor-pool-delete/cstor-pool-delete
     - ./script/4-chaos/Cstor-pool-delete/cstor-pool-delete
 
-cStor-target-kill:
-  extends: .chaos_test_template
-  script: 
-    - chmod 775 ./script/4-chaos/Target-Kill/target-kill
-    - ./script/4-chaos/Target-Kill/target-kill
+      #cStor-target-kill:
+      #  extends: .chaos_test_template
+      #  script: 
+      #    - chmod 775 ./script/4-chaos/Target-Kill/target-kill
+      #    - ./script/4-chaos/Target-Kill/target-kill
 
 Target-Network-Delay:
   extends: .chaos_test_template
