@@ -3,12 +3,13 @@ set -e
 
 path=$(pwd)
 echo "creating packet-cluster"
+echo "$PENULTIMATE_K8S_VERSION"
 mkdir -p ~/.kube   $path/cluster $path/cluster/ssh $path/cluster/.kube
 export PACKET_API_TOKEN=$packet_api_token
 git clone https://github.com/mayadata-io/litmus.git
 cd litmus/k8s/packet/k8s-installer
 echo "--------------- creating packet cluster --------------------"
-ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=1.15.2-00 os=ubuntu_16_04" -v | tee create_packet_cluster
+ansible-playbook create_packet_cluster.yml --extra-vars "k8s_version=$PENULTIMATE_K8S_VERSION os=ubuntu_16_04" -v | tee create_packet_cluster
 cat create_packet_cluster | grep failed=0
 if [ "$?" != "0" ]; then
 rm create_packet_cluster
