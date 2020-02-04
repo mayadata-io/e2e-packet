@@ -1,0 +1,271 @@
+#!/bin/bash
+set -x
+
+source ~/.profile
+gittoken=$(echo "$github_token")
+
+job_id=$CI_JOB_ID
+pipeline_id=$CI_PIPELINE_ID
+commit_id=$CI_COMMIT_SHA
+releaseTag=$RELEASE_TAG
+
+time="date"
+current_time=$(eval $time)
+
+present_dir=$(pwd)
+echo $present_dir
+
+echo "Setting up test dependencies.."	
+${utils_path}/setup_dependencies litmus-test
+
+bash script/utils/e2e-cr jobname:pool-pod-failure jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
+bash script/utils/e2e-cr jobname:pool-pod-failure jobphase:Running init_time:"$current_time"
+
+################
+# LitmusBook 1 #
+################
+
+echo "*******Deploying Busybox Application****"
+
+test_name=$(bash script/utils/generate_test_name testcase=busybox-provision-pool-pod-failure metadata="")
+echo $test_name
+
+git clone https://github.com/mayadata-io/litmus.git
+cd litmus
+echo "Running the litmus test for Busybox Deployment.."
+
+cp apps/busybox/deployers/run_litmus_test.yml busybox_pool_pod_failure.yml
+
+sed -i -e 's/app: busybox-litmus/app: deploy-busybox-pool-pod-failure/g' \
+-e 's/app=busybox-sts/app=pool-pod-failure/g' \
+-e 's/value: statefulset/value: deployment/g' \
+-e 's/value: openebs-cstor-sparse/value: openebs-cstor-disk/g' \
+-e 's/value: openebs-busybox/value: openebs-bb-pool-pod-failure/g' \
+-e 's/value: app-busybox-ns/value: pool-pod-failure/g' busybox_pool_pod_failure.yml
+cat busybox_pool_pod_failure.yml
+
+bash ../script/utils/litmus_job_runner label='app:deploy-busybox-pool-pod-failure' job=busybox_pool_pod_failure.yml
+cd ..
+bash script/utils/dump_cluster_state;
+bash script/utils/event_updater jobname:pool-pod-failure $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
+
+if [ "$?" != "0" ]; then
+exit 1;
+fi
+
+################
+# LitmusBook 2 #
+################
+
+run_id="pool-pod-failure";test_name=$(bash script/utils/generate_test_name testcase=busybox-liveness metadata=${run_id})
+echo $test_name
+
+cd litmus
+# copy the content of deployer run_litmus_test.yml into a different file to update the test specific parameters.
+cp apps/busybox/liveness/run_litmus_test.yml busybox_loadgen_pool_pod_failure.yml
+
+# Update the environmental variables in litmus job spec.
+
+sed -i -e 's/value: app-busybox-ns/value: pool-pod-failure/g' \
+-e 's/app=busybox-sts/app=pool-pod-failure/g' \
+-e 's/liveness: litmus-busybox-liveness/liveness: busybox-liveness-pool-pod-failure-charts/g' busybox_loadgen_pool_pod_failure.yml
+
+cat busybox_loadgen_pool_pod_failure.yml
+
+sed -i '/command:/i \
+          - name: RUN_ID\
+            value: '"$run_id"'\
+' busybox_loadgen_pool_pod_failure.yml
+
+# Run the Litmus job and get the details of the litmus job from litmus_job_runner utils.
+bash ../script/utils/litmus_job_runner label='liveness:busybox-liveness-pool-pod-failure-charts' job=busybox_loadgen_pool_pod_failure.yml
+cd ..
+# Get the cluster state Once the litmus jobs completed.
+bash script/utils/dump_cluster_state;
+# Update the e2e event for the job.
+bash script/utils/event_updater jobname:pool-pod-failure $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
+
+if [ "$?" != "0" ]; then
+exit 1;
+fi
+
+################
+# LitmusBook 3 #
+################
+
+# Performing openebs pool pod failure
+
+# Download the experiment cr spec
+wget -O openebs_pool_pod_failure.yml https://hub.litmuschaos.io/api/chaos?file=charts/openebs/openebs-pool-pod-failure/experiment.yaml
+
+# Update the experiment cr to include configmap
+sed -i -e 's/#configmaps:/configmaps:/g' \
+-e 's/#- name: openebs-pool-pod-failure/- name: openebs-pool-pod-failure/g' \
+-e 's!#  mountPath: /mnt!  mountPath: /mnt!g' openebs_pool_pod_failure.yml
+
+cat openebs_pool_pod_failure.yml
+
+kubectl apply -f openebs_pool_pod_failure.yml -n pool-pod-failure
+
+# Creating Service Account
+cp script/utils/serviceaccount.yml run_serviceaccount.yml
+sed -i 's/namespace: default/namespace: pool-pod-failure/g' run_serviceaccount.yml
+kubectl apply -f run_serviceaccount.yml
+
+# Annotating the Application Busybox
+kubectl annotate deploy/app-busybox -n pool-pod-failure litmuschaos.io/chaos="true"
+
+# Preparing Chaos Engine Spec.
+cp script/utils/chaosengine.yml run_chaosengine.yml
+
+sed -i -e 's/name: experiment_name-configmap/name: openebs-pool-pod-failure/g' \
+-e 's/applabel: "run=myserver"/applabel: "app=pool-pod-failure"/g' \
+-e 's/namespace: default/namespace: pool-pod-failure/g' \
+-e 's/appns: default/appns: pool-pod-failure/g' \
+-e 's/name: experiment_name/name: openebs-pool-pod-failure/g' run_chaosengine.yml
+
+## Replace the value of DATA_PERSISTENCE with application name in chaosengine spec. 
+sed -i -e '/name: DATA_PERSISTENCE/{n;s/.*/          value: busybox/}' \
+-e '/name: APP_PVC/{n;s/.*/          value: openebs-bb-pool-pod-failure/}' run_chaosengine.yml
+
+## Insert the set of variables for busybox data consistency util into configmap spec.
+sed -i '/parameters.yml: |/a \
+    blocksize: 4k\
+    blockcount: 1024\
+    testfile: poolpodfailure
+' run_chaosengine.yml
+
+cat run_chaosengine.yml
+
+# Running the chaos through chaosengine
+kubectl apply -f run_chaosengine.yml
+
+## Obtain the chaosengine pod name 
+
+ChaosEngineCmd="kubectl get pod -n pool-pod-failure -l app=engine-busybox --no-headers -o custom-columns=:.metadata.name"
+chaosengine_pod=$(eval ${ChaosEngineCmd}); retcode=$?
+bash script/utils/error_handler ${retcode} msg="Unable to find chaos engine runner pod, exiting" action="exit"
+
+# Obtain the status of chaos engine pod 
+jobStateCmd="kubectl get pod ${chaosengine_pod} --no-headers -n pool-pod-failure -o custom-columns=:status.phase"
+
+# Wait for completion of job
+while true; do
+  jstate=$(eval ${jobStateCmd}); rc=$?
+  if [[ $rc -eq 0 && ! -z $jstate ]]; then
+    if [[ "$jstate" != "Succeeded" ]]; then
+      sleep 10
+    else break;
+    fi
+  else
+    echo "unable to get litmus job status"; exit 1
+  fi
+done
+echo "Litmus test run Job has completed"
+
+# Obtain the job runner pod which is created by chaos engine runner pod
+JobRunnerCmd="kubectl get pod -n pool-pod-failure -l name=openebs-pool-pod-failure --no-headers -o custom-columns=:.metadata.name"
+jobrunner_pod=$(eval ${JobRunnerCmd}); retcode=$?
+bash script/utils/error_handler ${retcode} msg="Unable to find job runner pod created by chaos engine runner pod, exiting" action="exit"
+
+echo "Dumping Litmus test pod logs for debug"; echo ""
+kubectl logs -f $jobrunner_pod -n pool-pod-failure
+
+bash script/utils/dump_cluster_state;
+
+# Obtain testResults
+testResult=$(kubectl get chaosresults engine-busybox-openebs-pool-pod-failure -n pool-pod-failure --no-headers -o custom-columns=:.spec.experimentstatus.verdict)
+
+if [[ ${testResult} == "Pass" ]]; then
+echo "      pool-pod-failure: Pass" >> result-pool-pod-failure.yml
+kubectl apply -f result-pool-pod-failure.yml
+echo "***pool-pod-failure: Passed******"
+else
+echo "      pool-pod-failure: Fail" >> result-pool-pod-failure.yml
+bash script/utils/e2e-cr jobname:pool-pod-failure jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Fail
+kubectl apply -f result-pool-pod-failure.yml; exit 1
+fi
+
+if [ "$?" != "0" ]; then
+exit 1;
+fi
+
+################
+# LitmusBook 4 #
+################
+
+run_id="deprovision-pool-pod-failure";test_name=$(bash script/utils/generate_test_name testcase=busybox-liveness metadata=${run_id})
+echo $test_name
+
+cd litmus
+# copy the content of deployer run_litmus_test.yml into a different file to update the test specific parameters.
+cp apps/busybox/liveness/run_litmus_test.yml busybox_loadgen_deprovision_pool_pod_failure.yml
+
+# Update the environmental variables in litmus job spec.
+
+sed -i -e 's/value: app-busybox-ns/value: pool-pod-failure/g' \
+-e 's/app=busybox-sts/app=pool-pod-failure/g' \
+-e 's/value: provision/value: deprovision/g' \
+-e 's/generateName: litmus-busybox-liveness/generateName: busybox-liveness-dep-pool-pod-failure/g' \
+-e 's/liveness: litmus-busybox-liveness/liveness: busybox-liveness-deprovision-pool-pod-failure/g' busybox_loadgen_deprovision_pool_pod_failure.yml
+
+sed -i '/command:/i \
+          - name: RUN_ID\
+            value: '"$run_id"'\
+' busybox_loadgen_deprovision_pool_pod_failure.yml
+
+cat busybox_loadgen_deprovision_pool_pod_failure.yml
+# Run the Litmus job and get the details of the litmus job from litmus_job_runner utils.
+bash ../script/utils/litmus_job_runner label='liveness:busybox-liveness-deprovision-pool-pod-failure' job=busybox_loadgen_deprovision_pool_pod_failure.yml
+cd ..
+# Get the cluster state Once the litmus jobs completed.
+bash script/utils/dump_cluster_state;
+bash script/utils/event_updater jobname:pool-pod-failure $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
+
+rc_val=$(echo $?)
+
+if [ "$rc_val" != "0" ]; then
+exit 1;
+fi
+
+################
+# LitmusBook 5 #
+################
+
+echo "********Deprovisioning Busybox Application*******"
+
+test_name=$(bash script/utils/generate_test_name testcase=busybox-deprovision-pool-pod-failure metadata="")
+echo $test_name
+
+cd litmus
+cp apps/busybox/deployers/run_litmus_test.yml deprovision_pool_pod_failure.yml
+
+sed -i -e 's/generateName: litmus-busybox-deploy/generateName: busybox-deprovision-pool-pod-failure/g' \
+-e 's/app: busybox-litmus/app: busybox-deprovision-pool-pod-failure/g' \
+-e 's/app=busybox-sts/app=pool-pod-failure/g' \
+-e 's/value: statefulset/value: deployment/g' \
+-e 's/value: openebs-cstor-sparse/value: openebs-cstor-disk/g' \
+-e 's/value: openebs-busybox/value: openebs-bb-pool-pod-failure/g' \
+-e 's/value: app-busybox-ns/value: pool-pod-failure/g' \
+-e 's/value: provision/value: deprovision/g' deprovision_pool_pod_failure.yml
+
+echo "Running the litmus test for Busybox Deployment.."
+cat deprovision_pool_pod_failure.yml
+
+bash ../script/utils/litmus_job_runner label='app:busybox-deprovision-pool-pod-failure' job=deprovision_pool_pod_failure.yml
+cd ..
+bash script/utils/dump_cluster_state;
+bash script/utils/event_updater jobname:pool-pod-failure $test_name jobid:"$job_id" pipelineid:"$pipeline_id"
+
+rc_val=$(echo $?)
+
+if [ "$rc_val" != "0" ]; then
+exit 1;
+fi
+
+current_time=$(eval $time)
+bash script/utils/e2e-cr jobname:pool-pod-failure jobphase:Completed end_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag" test_result:Pass
+
+if [ "$rc_val" != "0" ]; then
+exit 1;
+fi
