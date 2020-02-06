@@ -20,6 +20,11 @@ ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/e2e-cr jobname:target-pod-failure jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
 bash script/utils/e2e-cr jobname:target-pod-failure jobphase:Running init_time:"$current_time"
+bash script/utils/e2e-cr jobname:target-container-failure jobphase:Waiting
+bash script/utils/e2e-cr jobname:pool-pod-failure jobphase:Waiting
+bash script/utils/e2e-cr jobname:pool-container-failure jobphase:Waiting
+bash script/utils/e2e-cr jobname:target-network-delay jobphase:Waiting
+bash script/utils/e2e-cr jobname:target-network-loss jobphase:Waiting
 
 ################
 # LitmusBook 1 #

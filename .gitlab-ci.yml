@@ -104,6 +104,36 @@ Openebs-Target-Pod-Failure:
     - chmod 775 ./script/chaoscharts/Target-Pod-failure/target-pod-failure
     - ./script/chaoscharts/Target-Pod-failure/target-pod-failure
 
+Openebs-Target-Container-Failure:
+  extends: .chaoscharts_template
+  script:
+    - chmod 775 ./script/chaoscharts/Target-Container-Failure/target-container-failure
+    - ./script/chaoscharts/Target-Container-Failure/target-container-failure
+
+Openebs-Pool-Container-Failure:
+  extends: .chaoscharts_template
+  script:
+    - chmod 775 ./script/chaoscharts/Pool-Container-Failure/pool-container-failure
+    - ./script/chaoscharts/Pool-Container-Failure/pool-container-failure
+
+Openebs-Pool-Pod-Failure:
+  extends: .chaoscharts_template
+  script:
+    - chmod 775 ./script/chaoscharts/Pool-Pod-Failure/pool-pod-failure
+    - ./script/chaoscharts/Pool-Pod-Failure/pool-pod-failure
+
+Openebs-Target-Network-Delay:
+  extends: .chaoscharts_template
+  script:
+    - chmod 775 ./script/chaoscharts/Target-Network-Delay/target-network-delay
+    - ./script/chaoscharts/Target-Network-Delay/target-network-delay
+
+Openebs-Target-Network-Loss:
+  extends: .chaoscharts_template
+  script:
+    - chmod 775 ./script/chaoscharts/Target-Network-Loss/target-network-loss
+    - ./script/chaoscharts/Target-Network-Loss/target-network-loss
+
       ############# cleanup stage ##############
 cleanup-packet:
   when: always
