@@ -12,7 +12,7 @@ time="date"
 current_time=$(eval $time)
 
 echo "Setting up test dependencies.."
-${utils_path}/setup_dependencies infra-setup
+${utils_path}/setup_dependencies litmus-test
 
 #pooling over previous job to complete
 
