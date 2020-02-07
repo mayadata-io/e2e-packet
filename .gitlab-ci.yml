@@ -73,6 +73,34 @@ Create-striped-pool:
     paths:
       - openebs-packet/
 
+Create-cspc-striped-pool:
+  image: atulabhi/kops:v8
+  stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-16
+  dependencies:
+    - packet-cluster
+  script:
+    - chmod 775 ./script/2-infra-setup/create-cspc-striped-pool/cspc-striped-pool
+    - ./script/2-infra-setup/create-cspc-striped-pool/cspc-striped-pool
+  artifacts:
+    paths:
+      - openebs-packet/
+
+Deploy-csi-provisioner:
+  image: atulabhi/kops:v8
+  stage: PROVIDER-INFRA-SETUP
+  tags: 
+    - k8s-1-16
+  dependencies:
+    - packet-cluster
+  script:
+    - chmod 775 ./script/2-infra-setup/deploy-csi-provisioner/csi-provisioner
+    - ./script/2-infra-setup/deploy-csi-provisioner/csi-provisioner
+  artifacts:
+    paths:
+      - openebs-packet/
+
 # NFSv3-Provision:
 #   image: atulabhi/kops:v8
 #   stage: PROVIDER-INFRA-SETUP
@@ -220,6 +248,18 @@ Jiva-snapshot-clone:
   script:
     - chmod 775 ./script/3-functional/Jiva-snapshot-clone/jiva-snapshot-clone
     - ./script/3-functional/Jiva-snapshot-clone/jiva-snapshot-clone
+
+Cstor-csi-snapshot:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/csi-cstor-snapshot/csi-cstor-snapshot
+    - ./script/3-functional/csi-cstor-snapshot/csi-cstor-snapshot
+
+Cstor-csi-clone:
+  extends: .func_test_template
+  script:
+    - chmod 775 ./script/3-functional/csi-cstor-clone/csi-cstor-clone
+    - ./script/3-functional/csi-cstor-clone/csi-cstor-clone
 
 Jiva-pods-openebs-namespace:
   extends: .func_test_template
