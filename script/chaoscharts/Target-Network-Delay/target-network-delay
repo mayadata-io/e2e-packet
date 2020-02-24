@@ -19,7 +19,8 @@ echo "Setting up test dependencies.."
 ${utils_path}/setup_dependencies litmus-test
 
 bash script/utils/pooling jobname:pool-container-failure
-bash script/utils/e2e-cr jobname:target-network-delay jobphase:Running init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
+bash script/utils/e2e-cr jobname:target-network-delay jobphase:Waiting init_time:"$current_time" jobid:"$job_id" pipelineid:"$pipeline_id" openebs_version:"$releaseTag"
+bash script/utils/e2e-cr jobname:target-network-delay jobphase:Running init_time:"$current_time"
 
 ################
 # LitmusBook 1 #
