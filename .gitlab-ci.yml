@@ -122,11 +122,11 @@ cStor-Clone-different-capacity:
     - chmod 775 ./script/3-functional/Clone-different-capacity/clone-different-capacity
     - ./script/3-functional/Clone-different-capacity/clone-different-capacity
 
-Jiva-Delete-Autogen-Snapshot:
-  extends: .func_test_template
-  script:
-    - chmod 775 ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
-    - ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
+# Jiva-Delete-Autogen-Snapshot:
+#   extends: .func_test_template
+#   script:
+#     - chmod 775 ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
+#     - ./script/3-functional/Jiva-Snapshot-Delete/jiva-snapshot-delete
 
 cStor-Parent-Volume-Delete:
   extends: .func_test_template
